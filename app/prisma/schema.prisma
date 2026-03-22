@@ -67,6 +67,7 @@ model Topic {
   description String?
   emoji       String?
   userTopics  UserTopic[]
+  contents    Content[]
   createdAt   DateTime    @default(now())
 }
 
@@ -107,4 +108,19 @@ enum CurationFrequency {
   DAILY
   WEEKLY
   MONTHLY
+}
+
+model Content {
+  id          String   @id @default(uuid())
+  title       String
+  url         String   @unique
+  summary     String?
+  source      String   // "reddit" | "hackernews" | "devto" | "rss"
+  topicId     String?
+  author      String?
+  publishedAt DateTime?
+  fetchedAt   DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  topic Topic? @relation(fields: [topicId], references: [id])
 }
