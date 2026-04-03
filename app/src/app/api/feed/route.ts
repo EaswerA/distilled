@@ -2,7 +2,16 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
-import { scoreArticle, diversifyFeed, applyWeightDecay } from "@/lib/algorithm";
+import {
+  scoreArticle,
+  diversifyFeed,
+  applyWeightDecay,
+  suppressRedundancy,
+  injectTrendSlots,
+} from "@/lib/algorithm";
+import { redis } from "@/lib/redis";
+
+const CACHE_TTL = 60 * 15; // 15 minutes
 
 function frequencyToPostCount(frequency: string, userPostCount: number): number {
   switch (frequency) {
@@ -12,7 +21,7 @@ function frequencyToPostCount(frequency: string, userPostCount: number): number 
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -20,6 +29,17 @@ export async function GET() {
     }
 
     const userId = session.user.id;
+    const cacheKey = `feed:${userId}`;
+
+    // Check Redis cache first
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        return NextResponse.json(JSON.parse(cached));
+      }
+    } catch {
+      // Redis unavailable — continue without cache
+    }
 
     // Apply weight decay
     await applyWeightDecay(userId);
@@ -48,27 +68,48 @@ export async function GET() {
       userTopics.map((ut) => [ut.topicId, ut.weight])
     );
 
-    // Fetch more than needed so we can score + trim
+    // Session digest — get articles user already clicked
+    const clickedIds = await prisma.interaction.findMany({
+      where: { userId, type: "CLICK" },
+      select: { contentId: true },
+    });
+    const clickedSet = new Set(clickedIds.map((i) => i.contentId));
+
+    // Fetch candidate articles — exclude already clicked
     const rawArticles = await prisma.content.findMany({
-      where: { topicId: { in: topicIds } },
+      where: {
+        topicId: { in: topicIds },
+        id: { notIn: Array.from(clickedSet) },
+      },
       orderBy: { publishedAt: "desc" },
-      take: postCount * 3,
+      take: postCount * 4,
       include: { topic: true },
     });
 
-    // Score each article
-    const scored = rawArticles
-      .map((article) => ({
-        ...article,
-        _score: scoreArticle(article, topicWeightMap),
-      }))
+    // Redundancy suppression
+    const dedupedArticles = suppressRedundancy(rawArticles);
+
+    // Composite scoring with source + topic diversity tracking
+    const seenSources = new Map<string, number>();
+    const seenTopics = new Map<string, number>();
+
+    const scored = dedupedArticles
+      .map((article) => {
+        const score = scoreArticle(article, topicWeightMap, seenSources, seenTopics);
+        // Update seen counts
+        seenSources.set(article.source, (seenSources.get(article.source) ?? 0) + 1);
+        if (article.topicId) {
+          seenTopics.set(article.topicId, (seenTopics.get(article.topicId) ?? 0) + 1);
+        }
+        return { ...article, _score: score };
+      })
       .sort((a, b) => b._score - a._score)
-      .slice(0, postCount * 1.5);
+      .slice(0, Math.floor(postCount * 1.5));
 
     // Diversity pass
     const diversified = diversifyFeed(scored).slice(0, postCount);
 
-    // Fetch user's saved/liked interactions for these articles
+    // Fetch liked/saved interactions
     const articleIds = diversified.map((a) => a.id);
     const interactions = await prisma.interaction.findMany({
       where: {
@@ -85,21 +126,33 @@ export async function GET() {
       interactions.filter((i) => i.type === "SAVE").map((i) => i.contentId)
     );
 
-    // Attach interaction state to articles
-    const articles = diversified.map((a) => ({
+    // Attach interaction state
+    const articlesWithState = diversified.map((a) => ({
       ...a,
       isLiked: likedSet.has(a.id),
       isSaved: savedSet.has(a.id),
     }));
 
-    return NextResponse.json({
-      articles,
+    // Trend slot injection
+    const finalArticles = await injectTrendSlots(articlesWithState, topicIds);
+
+    const response = {
+      articles: finalArticles,
       preferences: {
         postCount,
         frequency,
         topics: userTopics.map((ut) => ut.topic.name),
       },
-    });
+    };
+
+    // Cache the response in Redis
+    try {
+      await redis.set(cacheKey, JSON.stringify(response), "EX", CACHE_TTL);
+    } catch {
+      // Redis unavailable — skip caching
+    }
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error("Feed API error:", error);
     return NextResponse.json({ error: "Failed to fetch feed" }, { status: 500 });

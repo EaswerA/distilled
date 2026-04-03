@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
+import { redis } from "@/lib/redis";
 
 const WEIGHT_DELTA: Record<string, number> = {
   LIKE:  0.15,
@@ -23,21 +24,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
 
-    // Record the interaction (ignore if already exists)
     await prisma.interaction.upsert({
       where: { userId_contentId_type: { userId, contentId, type } },
       update: {},
       create: { userId, contentId, type },
     });
 
-    // Find the content's topic
     const content = await prisma.content.findUnique({
       where: { id: contentId },
       select: { topicId: true },
     });
 
     if (content?.topicId) {
-      // Update topic weight
       const userTopic = await prisma.userTopic.findUnique({
         where: { userId_topicId: { userId, topicId: content.topicId } },
       });
@@ -54,6 +52,11 @@ export async function POST(req: Request) {
       }
     }
 
+    // Invalidate feed cache so next load reflects new interaction
+    try {
+      await redis.del(`feed:${userId}`);
+    } catch {}
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Interaction error:", error);
@@ -61,7 +64,6 @@ export async function POST(req: Request) {
   }
 }
 
-// Toggle like/save off
 export async function DELETE(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -76,7 +78,6 @@ export async function DELETE(req: Request) {
       where: { userId, contentId, type },
     });
 
-    // Decrease topic weight slightly on unlike
     const content = await prisma.content.findUnique({
       where: { id: contentId },
       select: { topicId: true },
@@ -95,6 +96,11 @@ export async function DELETE(req: Request) {
         });
       }
     }
+
+    // Invalidate feed cache
+    try {
+      await redis.del(`feed:${userId}`);
+    } catch {}
 
     return NextResponse.json({ success: true });
   } catch (error) {
