@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
+import { scoreArticle, diversifyFeed, applyWeightDecay } from "@/lib/algorithm";
 
 function frequencyToPostCount(frequency: string, userPostCount: number): number {
   switch (frequency) {
-    case "WEEKLY":  return Math.max(userPostCount, 50);
+    case "WEEKLY":  return Math.max(userPostCount, 60);
     case "MONTHLY": return Math.max(userPostCount, 100);
     default:        return userPostCount;
   }
@@ -19,6 +20,9 @@ export async function GET() {
     }
 
     const userId = session.user.id;
+
+    // Apply weight decay
+    await applyWeightDecay(userId);
 
     const [userPreference, userTopics] = await Promise.all([
       prisma.userPreference.findUnique({ where: { userId } }),
@@ -39,14 +43,54 @@ export async function GET() {
       return NextResponse.json({ articles: [], preferences: {} });
     }
 
-    const articles = await prisma.content.findMany({
-      where: {
-        topicId: { in: topicIds },
-      },
+    // Build topic weight map
+    const topicWeightMap = new Map(
+      userTopics.map((ut) => [ut.topicId, ut.weight])
+    );
+
+    // Fetch more than needed so we can score + trim
+    const rawArticles = await prisma.content.findMany({
+      where: { topicId: { in: topicIds } },
       orderBy: { publishedAt: "desc" },
-      take: postCount,
+      take: postCount * 3,
       include: { topic: true },
     });
+
+    // Score each article
+    const scored = rawArticles
+      .map((article) => ({
+        ...article,
+        _score: scoreArticle(article, topicWeightMap),
+      }))
+      .sort((a, b) => b._score - a._score)
+      .slice(0, postCount * 1.5);
+
+    // Diversity pass
+    const diversified = diversifyFeed(scored).slice(0, postCount);
+
+    // Fetch user's saved/liked interactions for these articles
+    const articleIds = diversified.map((a) => a.id);
+    const interactions = await prisma.interaction.findMany({
+      where: {
+        userId,
+        contentId: { in: articleIds },
+        type: { in: ["LIKE", "SAVE"] },
+      },
+    });
+
+    const likedSet = new Set(
+      interactions.filter((i) => i.type === "LIKE").map((i) => i.contentId)
+    );
+    const savedSet = new Set(
+      interactions.filter((i) => i.type === "SAVE").map((i) => i.contentId)
+    );
+
+    // Attach interaction state to articles
+    const articles = diversified.map((a) => ({
+      ...a,
+      isLiked: likedSet.has(a.id),
+      isSaved: savedSet.has(a.id),
+    }));
 
     return NextResponse.json({
       articles,

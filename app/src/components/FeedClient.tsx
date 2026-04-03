@@ -13,6 +13,8 @@ type Article = {
   source: string;
   author: string | null;
   publishedAt: string | null;
+  isLiked: boolean;
+  isSaved: boolean;
   topic: { name: string; emoji: string | null } | null;
 };
 
@@ -55,7 +57,15 @@ function timeAgo(dateStr: string | null): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-function ArticleCard({ article }: { article: Article }) {
+function ArticleCard({
+  article,
+  onLike,
+  onSave,
+}: {
+  article: Article;
+  onLike: (id: string, liked: boolean) => void;
+  onSave: (id: string, saved: boolean) => void;
+}) {
   const sourceColor = SOURCE_COLORS[article.source] ?? "#888";
   const sourceLabel = SOURCE_LABELS[article.source] ?? article.source;
   const sourceEmoji = SOURCE_EMOJI[article.source] ?? "📰";
@@ -93,6 +103,20 @@ function ArticleCard({ article }: { article: Article }) {
             {timeAgo(article.publishedAt)}
           </span>
           <div className="article-links">
+            <button
+              className={`action-btn ${article.isLiked ? "liked" : ""}`}
+              onClick={() => onLike(article.id, article.isLiked)}
+              title={article.isLiked ? "Unlike" : "Like"}
+            >
+              {article.isLiked ? "❤️" : "🤍"}
+            </button>
+            <button
+              className={`action-btn ${article.isSaved ? "saved" : ""}`}
+              onClick={() => onSave(article.id, article.isSaved)}
+              title={article.isSaved ? "Unsave" : "Save"}
+            >
+              {article.isSaved ? "🔖" : "🏷️"}
+            </button>
             {article.sourceUrl && (
               <a
                 href={article.sourceUrl}
@@ -108,6 +132,14 @@ function ArticleCard({ article }: { article: Article }) {
               target="_blank"
               rel="noopener noreferrer"
               className="read-more"
+              onClick={() => {
+                // Track click passively
+                fetch("/api/interactions", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ contentId: article.id, type: "CLICK" }),
+                });
+              }}
             >
               Read more →
             </a>
@@ -134,6 +166,44 @@ export default function FeedClient() {
       .catch(() => setLoading(false));
   }, []);
 
+  async function handleLike(articleId: string, isLiked: boolean) {
+    const method = isLiked ? "DELETE" : "POST";
+    await fetch("/api/interactions", {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contentId: articleId, type: "LIKE" }),
+    });
+    setFeed((prev) =>
+      prev
+        ? {
+            ...prev,
+            articles: prev.articles.map((a) =>
+              a.id === articleId ? { ...a, isLiked: !isLiked } : a
+            ),
+          }
+        : prev
+    );
+  }
+
+  async function handleSave(articleId: string, isSaved: boolean) {
+    const method = isSaved ? "DELETE" : "POST";
+    await fetch("/api/interactions", {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contentId: articleId, type: "SAVE" }),
+    });
+    setFeed((prev) =>
+      prev
+        ? {
+            ...prev,
+            articles: prev.articles.map((a) =>
+              a.id === articleId ? { ...a, isSaved: !isSaved } : a
+            ),
+          }
+        : prev
+    );
+  }
+
   const sources = ["all", "hackernews", "reddit", "devto", "rss"];
 
   const filtered =
@@ -150,8 +220,11 @@ export default function FeedClient() {
         .feed-container { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
         .feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
         .feed-logo { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; color: #0f1132; }
+        .header-actions { display: flex; gap: 10px; }
         .pref-btn { padding: 8px 18px; border: 1.5px solid #e5e7eb; border-radius: 10px; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: #4f52d3; cursor: pointer; transition: all 0.15s; }
         .pref-btn:hover { background: #f0f0fc; border-color: #4f52d3; }
+        .saved-btn { padding: 8px 18px; border: 1.5px solid #e5e7eb; border-radius: 10px; background: #fff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: #6b7280; cursor: pointer; transition: all 0.15s; }
+        .saved-btn:hover { background: #f0f0fc; border-color: #4f52d3; color: #4f52d3; }
         .feed-meta { font-size: 13px; color: #9ca3af; margin-bottom: 24px; }
         .feed-meta span { color: #4f52d3; font-weight: 600; }
         .filter-bar { display: flex; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
@@ -171,22 +244,29 @@ export default function FeedClient() {
         .article-summary { font-size: 13px; color: #6b7280; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .article-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
         .article-meta { font-size: 12px; color: #9ca3af; }
+        .article-links { display: flex; gap: 12px; align-items: center; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 16px; padding: 2px 4px; border-radius: 6px; transition: transform 0.15s; }
+        .action-btn:hover { transform: scale(1.2); }
         .read-more { font-size: 13px; font-weight: 600; color: #4f52d3; text-decoration: none; }
+        .read-more:hover { text-decoration: underline; }
+        .discussion-link { font-size: 13px; font-weight: 500; color: #9ca3af; text-decoration: none; }
+        .discussion-link:hover { color: #4f52d3; text-decoration: underline; }
         .loading { text-align: center; padding: 80px 0; color: #9ca3af; font-size: 15px; }
         .empty { text-align: center; padding: 80px 0; color: #9ca3af; }
         .empty h2 { font-family: 'Sora', sans-serif; font-size: 20px; color: #0f1132; margin-bottom: 8px; }
-        .read-more:hover { text-decoration: underline; }
-        .article-links { display: flex; gap: 12px; align-items: center; }
-        .discussion-link { font-size: 13px; font-weight: 500; color: #9ca3af; text-decoration: none; }
-        .discussion-link:hover { color: #4f52d3; text-decoration: underline; }
       `}</style>
 
       <div className="feed-container">
         <div className="feed-header">
           <span className="feed-logo">Distilled</span>
-          <button className="pref-btn" onClick={() => router.push("/preferences")}>
-            ⚙️ Edit Preferences
-          </button>
+          <div className="header-actions">
+            <button className="saved-btn" onClick={() => router.push("/saved")}>
+              🔖 Saved
+            </button>
+            <button className="pref-btn" onClick={() => router.push("/preferences")}>
+              ⚙️ Edit Preferences
+            </button>
+          </div>
         </div>
 
         {loading ? (
@@ -215,7 +295,12 @@ export default function FeedClient() {
             </div>
             <div className="articles-grid">
               {filtered.map((article) => (
-                <ArticleCard key={article.id} article={article} />
+                <ArticleCard
+                  key={article.id}
+                  article={article}
+                  onLike={handleLike}
+                  onSave={handleSave}
+                />
               ))}
             </div>
           </>
