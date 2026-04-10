@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import ThemeToggle from "./ThemeToggle";
 
 type Article = {
@@ -107,7 +107,27 @@ function ArticleCard({
   const [showReason, setShowReason] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [copied, setCopied] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  async function handleShare() {
+    const shareUrl = article.url;
+    try {
+      if (typeof navigator !== "undefined" && navigator.share) {
+        await navigator.share({ title: article.title, url: shareUrl });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch { /* ignore */ }
+    }
+  }
   const sourceColor = SOURCE_COLORS[article.source] ?? "#888";
   const sourceLabel = SOURCE_LABELS[article.source] ?? article.source;
   const sourceEmoji = SOURCE_EMOJI[article.source] ?? "📰";
@@ -242,6 +262,28 @@ function ArticleCard({
                 </svg>
               </a>
             )}
+            <div className="share-wrap">
+              <button
+                className={`action-btn share-btn ${copied ? "share-copied" : ""}`}
+                onClick={handleShare}
+                title={copied ? "Link copied!" : "Share article"}
+              >
+                {copied ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="18" cy="5" r="3" />
+                    <circle cx="6" cy="12" r="3" />
+                    <circle cx="18" cy="19" r="3" />
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                  </svg>
+                )}
+              </button>
+              {copied && <span className="share-tooltip">Copied!</span>}
+            </div>
           </div>
           <a
             href={article.url}
@@ -271,11 +313,14 @@ const PAGE_SIZE = 10;
 
 export default function FeedClient() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [feed, setFeed] = useState<FeedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [scrolled, setScrolled] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [welcomeName, setWelcomeName] = useState("");
 
   useEffect(() => {
     fetch("/api/feed")
@@ -292,6 +337,18 @@ export default function FeedClient() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    const key = `welcomed_${session.user.id}`;
+    if (typeof window !== "undefined" && !sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, "1");
+      setWelcomeName(session.user.name ?? session.user.email ?? "");
+      setShowWelcome(true);
+      const t = setTimeout(() => setShowWelcome(false), 5000);
+      return () => clearTimeout(t);
+    }
+  }, [session?.user?.id]);
 
   async function handleLike(articleId: string, isLiked: boolean) {
     const method = isLiked ? "DELETE" : "POST";
@@ -567,6 +624,18 @@ export default function FeedClient() {
         .action-btn.active-save:hover { background: var(--bg-accent); color: var(--primary); }
         .discussion-btn { text-decoration: none; }
         .discussion-btn:hover { background: var(--bg-success); color: var(--text-success); }
+        .share-wrap { position: relative; display: flex; align-items: center; }
+        .share-btn:hover { background: var(--bg-accent); color: var(--primary); }
+        .share-btn.share-copied { color: #16a34a; }
+        .share-btn.share-copied:hover { background: #dcfce7; color: #16a34a; }
+        .share-tooltip {
+          position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+          background: var(--text-heading); color: var(--bg-page);
+          font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px;
+          white-space: nowrap; pointer-events: none;
+          animation: tooltipIn 0.15s ease;
+        }
+        @keyframes tooltipIn { from { opacity: 0; transform: translateX(-50%) translateY(4px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
         .read-link {
           display: flex; align-items: center; gap: 4px;
@@ -636,7 +705,58 @@ export default function FeedClient() {
           .feed-greeting { font-size: 22px; }
           .card-title { font-size: 15px; }
         }
+
+        /* ===== WELCOME TOAST ===== */
+        .welcome-toast {
+          position: fixed; top: 76px; right: 20px; z-index: 200;
+          background: var(--bg-card);
+          border: 1.5px solid var(--border-default);
+          border-left: 4px solid var(--primary);
+          border-radius: 14px;
+          padding: 14px 18px;
+          display: flex; align-items: center; gap: 12px;
+          box-shadow: var(--shadow-lg);
+          max-width: 320px;
+          animation: welcomeIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .welcome-toast.hiding { animation: welcomeOut 0.3s ease forwards; }
+        @keyframes welcomeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes welcomeOut { to { opacity: 0; transform: translateX(20px); } }
+        .welcome-icon {
+          width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+          background: var(--bg-accent);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 18px;
+        }
+        .welcome-text { flex: 1; min-width: 0; }
+        .welcome-title { font-size: 13px; font-weight: 700; color: var(--text-heading); }
+        .welcome-sub { font-size: 12px; color: var(--text-subtle); margin-top: 1px; }
+        .welcome-close {
+          background: none; border: none; cursor: pointer;
+          color: var(--text-subtle); padding: 4px; border-radius: 6px;
+          display: flex; align-items: center; flex-shrink: 0;
+          transition: color 0.15s;
+        }
+        .welcome-close:hover { color: var(--text-heading); }
+        @media (max-width: 640px) {
+          .welcome-toast { top: 68px; right: 12px; left: 12px; max-width: unset; }
+        }
       `}</style>
+
+      {showWelcome && (
+        <div className="welcome-toast">
+          <div className="welcome-icon">👋</div>
+          <div className="welcome-text">
+            <div className="welcome-title">Welcome back, {welcomeName.split(" ")[0] || welcomeName}!</div>
+            <div className="welcome-sub">Your feed is ready.</div>
+          </div>
+          <button className="welcome-close" onClick={() => setShowWelcome(false)} title="Dismiss">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       <nav className={`feed-navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="navbar-inner">

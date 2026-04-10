@@ -26,6 +26,7 @@ model User {
   preferences UserPreference?
   userTopics  UserTopic[]
   interactions Interaction[]
+  reports     Report[]
 }
 
 model Account {
@@ -164,4 +165,21 @@ enum InteractionType {
   LIKE
   CLICK
   SAVE
+}
+
+model Report {
+  id         String       @id @default(uuid())
+  userId     String
+  message    String
+  status     ReportStatus @default(OPEN)
+  adminNote  String?
+  createdAt  DateTime     @default(now())
+  resolvedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
 }

@@ -46,6 +46,30 @@ export default function ProfileClient() {
   const [pwSuccess, setPwSuccess] = useState("");
   const [showPw, setShowPw] = useState(false);
 
+  const [showReport, setShowReport] = useState(false);
+  const [reportMsg, setReportMsg] = useState("");
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState("");
+  const [reportSuccess, setReportSuccess] = useState(false);
+
+  async function handleReport(e: React.FormEvent) {
+    e.preventDefault();
+    setReportError(""); setReportSuccess(false);
+    if (reportMsg.trim().length < 10) { setReportError("Please describe the issue in at least 10 characters."); return; }
+    setReportLoading(true);
+    try {
+      const res = await fetch("/api/reports", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: reportMsg }),
+      });
+      const d = await res.json();
+      if (!res.ok) { setReportError(d.error ?? "Something went wrong."); }
+      else { setReportSuccess(true); setReportMsg(""); }
+    } catch { setReportError("Network error. Please try again."); }
+    finally { setReportLoading(false); }
+  }
+
   const pwRules = [
     { label: "At least 8 characters", met: pwForm.newPassword.length >= 8 },
     { label: "One uppercase letter", met: /[A-Z]/.test(pwForm.newPassword) },
@@ -225,6 +249,37 @@ export default function ProfileClient() {
         .prof-pw-success { background: #dcfce7; color: #16a34a; font-size: 13px; font-weight: 600; padding: 10px 14px; border-radius: 10px; }
         .prof-pw-spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; }
 
+        /* Report issue */
+        .prof-report-toggle {
+          display: flex; align-items: center; gap: 8px;
+          padding: 9px 16px; border-radius: 10px;
+          border: 1.5px solid var(--border-default); background: var(--bg-card);
+          font-family: inherit; font-size: 13px; font-weight: 600;
+          color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+        }
+        .prof-report-toggle:hover { border-color: #f59e0b; color: #d97706; background: #fffbeb; }
+        .prof-report-form { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        .prof-report-textarea {
+          width: 100%; min-height: 110px; padding: 13px 16px;
+          border: 1.5px solid var(--border-default); border-radius: 12px;
+          font-family: inherit; font-size: 14px; color: var(--text-heading);
+          outline: none; transition: all 0.2s; background: var(--bg-input);
+          resize: vertical; line-height: 1.5;
+        }
+        .prof-report-textarea::placeholder { color: var(--text-subtle); }
+        .prof-report-textarea:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.15); }
+        .prof-report-submit {
+          padding: 12px 22px; border: none; border-radius: 12px;
+          background: #f59e0b; color: white;
+          font-family: inherit; font-size: 14px; font-weight: 700;
+          cursor: pointer; transition: all 0.2s; width: fit-content;
+        }
+        .prof-report-submit:hover { background: #d97706; }
+        .prof-report-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+        .prof-report-error { background: var(--bg-error); color: var(--text-error); font-size: 13px; font-weight: 500; padding: 10px 14px; border-radius: 10px; }
+        .prof-report-success { background: #dcfce7; color: #16a34a; font-size: 13px; font-weight: 600; padding: 10px 14px; border-radius: 10px; }
+        .prof-report-char { font-size: 11px; color: var(--text-subtle); text-align: right; }
+
         /* Empty state */
         .prof-empty { text-align: center; padding: 40px 20px; color: var(--text-subtle); font-size: 14px; }
 
@@ -390,6 +445,53 @@ export default function ProfileClient() {
                   <button type="submit" className="prof-pw-submit" disabled={pwLoading}>
                     {pwLoading ? <span className="prof-pw-spinner" /> : "Update password"}
                   </button>
+                </form>
+              )}
+            </div>
+
+            {/* Report Issue */}
+            <div className="prof-card">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <div className="prof-card-title">Report an Issue</div>
+                  <div className="prof-card-desc" style={{ marginBottom: 0 }}>Found a bug or have feedback? Let us know.</div>
+                </div>
+                <button
+                  className="prof-report-toggle"
+                  onClick={() => { setShowReport((v) => !v); setReportError(""); setReportSuccess(false); }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  {showReport ? "Cancel" : "Report issue"}
+                </button>
+              </div>
+
+              {showReport && (
+                <form className="prof-report-form" onSubmit={handleReport}>
+                  <div>
+                    <textarea
+                      className="prof-report-textarea"
+                      placeholder="Describe your issue or feedback in detail..."
+                      value={reportMsg}
+                      onChange={(e) => { setReportMsg(e.target.value); setReportSuccess(false); }}
+                      maxLength={2000}
+                      required
+                    />
+                    <div className="prof-report-char">{reportMsg.length}/2000</div>
+                  </div>
+                  {reportError && <div className="prof-report-error">{reportError}</div>}
+                  {reportSuccess && (
+                    <div className="prof-report-success">
+                      Your report was sent! We'll look into it soon.
+                    </div>
+                  )}
+                  {!reportSuccess && (
+                    <button type="submit" className="prof-report-submit" disabled={reportLoading}>
+                      {reportLoading ? <span className="prof-pw-spinner" /> : "Send Report"}
+                    </button>
+                  )}
                 </form>
               )}
             </div>

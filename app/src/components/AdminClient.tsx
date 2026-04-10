@@ -16,6 +16,16 @@ type AdminUser = {
   _count: { interactions: number };
 };
 
+type Report = {
+  id: string;
+  message: string;
+  status: "OPEN" | "RESOLVED";
+  adminNote: string | null;
+  createdAt: string;
+  resolvedAt: string | null;
+  user: { id: string; name: string | null; email: string };
+};
+
 type ChangePwForm = { currentPassword: string; newPassword: string; confirmPassword: string };
 
 export default function AdminClient({ mustChangePassword }: { mustChangePassword: boolean }) {
@@ -38,6 +48,11 @@ export default function AdminClient({ mustChangePassword }: { mustChangePassword
   const [pwSuccess, setPwSuccess] = useState("");
   const [showPw, setShowPw] = useState(false);
 
+  const [reports, setReports] = useState<Report[]>([]);
+  const [reportsLoading, setReportsLoading] = useState(true);
+  const [resolvingId, setResolvingId] = useState<string | null>(null);
+  const [reportFilter, setReportFilter] = useState<"ALL" | "OPEN" | "RESOLVED">("OPEN");
+
   const pwRules = [
     { label: "At least 8 characters", met: pwForm.newPassword.length >= 8 },
     { label: "One uppercase letter", met: /[A-Z]/.test(pwForm.newPassword) },
@@ -51,6 +66,26 @@ export default function AdminClient({ mustChangePassword }: { mustChangePassword
       .then((d) => { setUsers(d.users ?? []); setTotal(d.total ?? 0); setLoading(false); })
       .catch(() => setLoading(false));
   }, [page]);
+
+  useEffect(() => {
+    setReportsLoading(true);
+    fetch("/api/admin/reports")
+      .then((r) => r.json())
+      .then((d) => { setReports(d.reports ?? []); setReportsLoading(false); })
+      .catch(() => setReportsLoading(false));
+  }, []);
+
+  async function handleResolve(reportId: string) {
+    setResolvingId(reportId);
+    try {
+      const res = await fetch(`/api/admin/reports/${reportId}/resolve`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
+      if (res.ok) {
+        setReports((prev) => prev.map((r) => r.id === reportId ? { ...r, status: "RESOLVED", resolvedAt: new Date().toISOString() } : r));
+      }
+    } finally {
+      setResolvingId(null);
+    }
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -274,6 +309,41 @@ export default function AdminClient({ mustChangePassword }: { mustChangePassword
         .adm-error { background: var(--bg-error); color: var(--text-error); font-size: 13px; padding: 10px 14px; border-radius: 10px; margin-bottom: 12px; }
         .adm-empty { text-align: center; padding: 40px; color: var(--text-subtle); font-size: 14px; }
         .adm-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 16px; font-size: 13px; color: var(--text-subtle); }
+
+        /* Reports */
+        .adm-report-filters { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+        .adm-report-filter {
+          padding: 6px 14px; border-radius: 999px;
+          border: 1.5px solid var(--border-default); background: var(--bg-card);
+          font-family: inherit; font-size: 12px; font-weight: 600;
+          color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+        }
+        .adm-report-filter:hover { border-color: var(--primary); color: var(--primary); }
+        .adm-report-filter.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .adm-report-list { display: flex; flex-direction: column; gap: 12px; }
+        .adm-report-item {
+          border: 1.5px solid var(--border-default); border-radius: 14px;
+          padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;
+          transition: border-color 0.2s;
+        }
+        .adm-report-item.open { border-left: 4px solid #f59e0b; }
+        .adm-report-item.resolved { border-left: 4px solid #86efac; opacity: 0.75; }
+        .adm-report-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .adm-report-user { font-size: 13px; font-weight: 600; color: var(--text-heading); }
+        .adm-report-email { font-size: 12px; color: var(--text-subtle); }
+        .adm-report-date { font-size: 11px; color: var(--text-subtle); white-space: nowrap; }
+        .adm-report-msg { font-size: 13px; color: var(--text-body); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+        .adm-report-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+        .chip-open { background: #fef3c7; color: #d97706; }
+        .chip-resolved { background: #dcfce7; color: #16a34a; }
+        .adm-resolve-btn {
+          padding: 6px 14px; border-radius: 8px;
+          border: 1.5px solid #86efac; color: #16a34a; background: transparent;
+          font-family: inherit; font-size: 12px; font-weight: 600;
+          cursor: pointer; transition: all 0.15s;
+        }
+        .adm-resolve-btn:hover { background: #dcfce7; }
+        .adm-resolve-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .adm-page-btn { padding: 6px 12px; border-radius: 8px; border: 1.5px solid var(--border-default); background: var(--bg-card); font-family: inherit; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
         .adm-page-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
         .adm-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -522,6 +592,76 @@ export default function AdminClient({ mustChangePassword }: { mustChangePassword
               <button className="adm-page-btn" disabled={page * PAGE_SIZE >= total} onClick={() => setPage((p) => p + 1)}>Next →</button>
             </div>
           )}
+        </div>
+
+        {/* User Reports */}
+        <div className="adm-card">
+          <div className="adm-card-header">
+            <div>
+              <div className="adm-card-title">User Reports</div>
+              <div className="adm-card-subtitle">
+                Issues submitted by users · {reports.filter((r) => r.status === "OPEN").length} open
+              </div>
+            </div>
+          </div>
+
+          <div className="adm-report-filters">
+            {(["OPEN", "ALL", "RESOLVED"] as const).map((f) => (
+              <button
+                key={f}
+                className={`adm-report-filter ${reportFilter === f ? "active" : ""}`}
+                onClick={() => setReportFilter(f)}
+              >
+                {f === "ALL" ? "All" : f === "OPEN" ? "Open" : "Resolved"}
+              </button>
+            ))}
+          </div>
+
+          {reportsLoading ? (
+            <div className="adm-empty">Loading reports...</div>
+          ) : (() => {
+            const filtered = reports.filter((r) => reportFilter === "ALL" || r.status === reportFilter);
+            if (filtered.length === 0) {
+              return <div className="adm-empty">{reportFilter === "OPEN" ? "No open reports." : "No reports yet."}</div>;
+            }
+            return (
+              <div className="adm-report-list">
+                {filtered.map((report) => (
+                  <div key={report.id} className={`adm-report-item ${report.status === "OPEN" ? "open" : "resolved"}`}>
+                    <div className="adm-report-header">
+                      <div>
+                        <div className="adm-report-user">{report.user.name ?? "—"}</div>
+                        <div className="adm-report-email">{report.user.email}</div>
+                      </div>
+                      <div className="adm-report-date">
+                        {new Date(report.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </div>
+                    </div>
+                    <div className="adm-report-msg">{report.message}</div>
+                    <div className="adm-report-footer">
+                      <span className={`adm-chip ${report.status === "OPEN" ? "chip-open" : "chip-resolved"}`}>
+                        {report.status === "OPEN" ? "Open" : "Resolved"}
+                      </span>
+                      {report.status === "OPEN" && (
+                        <button
+                          className="adm-resolve-btn"
+                          disabled={resolvingId === report.id}
+                          onClick={() => handleResolve(report.id)}
+                        >
+                          {resolvingId === report.id ? "..." : "Mark Resolved"}
+                        </button>
+                      )}
+                      {report.status === "RESOLVED" && report.resolvedAt && (
+                        <span style={{ fontSize: 11, color: "var(--text-subtle)" }}>
+                          Resolved {new Date(report.resolvedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Change password — collapsible at the bottom */}
