@@ -10,6 +10,7 @@ export async function ingestContentForTopic(
   const items: FetchedItem[] = await fetchContentForTopic(topicSlug, timeFilter);
 
   let saved = 0;
+  let summarizeCount = 0;
 
   for (const item of items) {
     try {
@@ -31,9 +32,11 @@ export async function ingestContentForTopic(
       });
 
       // Summarize if this article has no summary yet (new articles + backfill).
-      // 4-second delay keeps us well under the free-tier 15 RPM limit.
-      if (!result.summary) {
-        await new Promise((r) => setTimeout(r, 4000));
+      // Capped at 10 per ingest run to avoid burning the free-tier daily quota (1500 RPD).
+      // 5-second delay = 12 RPM, safely under the 15 RPM limit.
+      if (!result.summary && summarizeCount < 10) {
+        summarizeCount++;
+        await new Promise((r) => setTimeout(r, 5000));
         const ai = await summarizeContent(item.title, item.url);
         if (ai) {
           await prisma.content.update({
