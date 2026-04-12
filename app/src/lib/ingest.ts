@@ -5,7 +5,7 @@ import { summarizeContent } from "@/lib/summarize";
 // Global cap per full ingest cycle — not per topic.
 // Free tier: 1500 RPD. With ingest running ~3x/day this gives 500/run headroom,
 // but we cap at 20 to be conservative and leave room for retries.
-const SUMMARIZE_CAP_PER_RUN = 20;
+const SUMMARIZE_CAP_PER_RUN = 5;
 
 export async function ingestContentForTopic(
   topicId: string,
