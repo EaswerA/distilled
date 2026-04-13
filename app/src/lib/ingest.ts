@@ -3,9 +3,9 @@ import { fetchContentForTopic, FetchedItem, TimeFilter } from "@/lib/fetchers";
 import { summarizeContent } from "@/lib/summarize";
 
 // Global cap per full ingest cycle — not per topic.
-// Free tier: 1500 RPD. With ingest running ~3x/day this gives 500/run headroom,
-// but we cap at 20 to be conservative and leave room for retries.
-const SUMMARIZE_CAP_PER_RUN = 5;
+// Actual free tier limit: 20 RPD, 5 RPM (Gemini 2.5 Flash).
+// 4 ingest runs/day × 4 calls = 16/day, leaving a 4-call buffer.
+const SUMMARIZE_CAP_PER_RUN = 4;
 
 export async function ingestContentForTopic(
   topicId: string,
@@ -40,7 +40,7 @@ export async function ingestContentForTopic(
       // 5-second delay = 12 RPM, safely under the free-tier 15 RPM limit.
       if (!result.summary && summarizeCounter.count < SUMMARIZE_CAP_PER_RUN) {
         summarizeCounter.count++;
-        await new Promise((r) => setTimeout(r, 5000));
+        await new Promise((r) => setTimeout(r, 13000));
         const ai = await summarizeContent(item.title, item.url);
         if (ai) {
           await prisma.content.update({
