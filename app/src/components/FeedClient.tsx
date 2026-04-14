@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import NavBar from "./NavBar";
+import WelcomeModal from "./WelcomeModal";
 
 type Article = {
   id: string;
@@ -427,6 +428,7 @@ export default function FeedClient() {
 
   return (
     <>
+      <WelcomeModal />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
