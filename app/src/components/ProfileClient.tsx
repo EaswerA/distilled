@@ -8,8 +8,8 @@ import {
 } from "recharts";
 
 const TOPIC_COLORS = [
-  "#6366f1", "#8b5cf6", "#ec4899", "#f59e0b",
-  "#10b981", "#3b82f6", "#ef4444", "#14b8a6",
+  "#f97316", "#0ea5e9", "#10b981", "#f59e0b",
+  "#3b82f6", "#ef4444", "#14b8a6", "#84cc16",
 ];
 
 type ProfileData = {
@@ -117,13 +117,14 @@ export default function ProfileClient() {
 
         /* Avatar + info card */
         .prof-hero {
-          background: var(--bg-card); border-radius: 20px;
+          background: var(--bg-card); border-radius: 12px;
+          border: 1px solid var(--border-default);
           padding: 28px; box-shadow: var(--shadow-sm);
           display: flex; align-items: center; gap: 24px;
         }
         .prof-avatar {
-          width: 72px; height: 72px; border-radius: 20px; flex-shrink: 0;
-          background: linear-gradient(135deg, var(--gradient-brand-start), var(--gradient-brand-end));
+          width: 72px; height: 72px; border-radius: 14px; flex-shrink: 0;
+          background: var(--primary);
           display: flex; align-items: center; justify-content: center;
           font-size: 28px; font-weight: 800; color: white; letter-spacing: -1px;
         }
@@ -140,7 +141,8 @@ export default function ProfileClient() {
         /* Stat cards */
         .prof-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .prof-stat {
-          background: var(--bg-card); border-radius: 16px;
+          background: var(--bg-card); border-radius: 12px;
+          border: 1px solid var(--border-default);
           padding: 20px; text-align: center; box-shadow: var(--shadow-sm);
         }
         .prof-stat-value { font-size: 32px; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
@@ -148,7 +150,8 @@ export default function ProfileClient() {
 
         /* Chart cards */
         .prof-card {
-          background: var(--bg-card); border-radius: 20px;
+          background: var(--bg-card); border-radius: 12px;
+          border: 1px solid var(--border-default);
           padding: 24px; box-shadow: var(--shadow-sm);
         }
         .prof-card-title { font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px; }
@@ -214,7 +217,7 @@ export default function ProfileClient() {
           font-family: inherit; font-size: 13px; font-weight: 600;
           color: var(--text-muted); cursor: pointer; transition: all 0.2s;
         }
-        .prof-report-toggle:hover { border-color: #f59e0b; color: #d97706; background: #fffbeb; }
+        .prof-report-toggle:hover { border-color: var(--primary); color: var(--primary); background: var(--bg-accent); }
         .prof-report-form { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
         .prof-report-textarea {
           width: 100%; min-height: 110px; padding: 13px 16px;
@@ -224,14 +227,14 @@ export default function ProfileClient() {
           resize: vertical; line-height: 1.5;
         }
         .prof-report-textarea::placeholder { color: var(--text-subtle); }
-        .prof-report-textarea:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,0.15); }
+        .prof-report-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
         .prof-report-submit {
           padding: 12px 22px; border: none; border-radius: 12px;
-          background: #f59e0b; color: white;
+          background: var(--btn-dark); color: var(--text-inverse);
           font-family: inherit; font-size: 14px; font-weight: 700;
           cursor: pointer; transition: all 0.2s; width: fit-content;
         }
-        .prof-report-submit:hover { background: #d97706; }
+        .prof-report-submit:hover { background: var(--btn-dark-hover); }
         .prof-report-submit:disabled { opacity: 0.5; cursor: not-allowed; }
         .prof-report-error { background: var(--bg-error); color: var(--text-error); font-size: 13px; font-weight: 500; padding: 10px 14px; border-radius: 10px; }
         .prof-report-success { background: #dcfce7; color: #16a34a; font-size: 13px; font-weight: 600; padding: 10px 14px; border-radius: 10px; }

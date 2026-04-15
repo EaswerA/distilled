@@ -28,7 +28,7 @@ const SOURCE_COLORS: Record<string, string> = {
 const FALLBACK_GRADIENTS: Record<string, string> = {
   reddit:     "linear-gradient(135deg, #FF4500 0%, #FF6534 100%)",
   hackernews: "linear-gradient(135deg, #FF6600 0%, #FF8C33 100%)",
-  devto:      "linear-gradient(135deg, #3B49DF 0%, #6470F0 100%)",
+  devto:      "linear-gradient(135deg, #374151 0%, #4B5563 100%)",
   rss:        "linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)",
 };
 
@@ -121,7 +121,7 @@ function SavedCard({
         ) : (
           <div
             className="saved-card-img-fallback"
-            style={{ background: FALLBACK_GRADIENTS[article.source] ?? "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+            style={{ background: FALLBACK_GRADIENTS[article.source] ?? "linear-gradient(135deg, #374151 0%, #4B5563 100%)" }}
           >
             <span className="saved-fallback-emoji" style={{ fontSize: 44 }}>
               {article.topic?.emoji ?? sourceEmoji}
@@ -254,18 +254,19 @@ export default function SavedClient() {
 
         /* Card */
         .saved-card {
-          background: var(--bg-card); border-radius: 16px; overflow: hidden;
+          background: var(--bg-card); border-radius: 12px; overflow: hidden;
+          border: 1px solid var(--border-default);
           box-shadow: var(--shadow-sm);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.25s ease;
           display: flex; flex-direction: column;
-          opacity: 0; transform: translateY(16px);
+          opacity: 0; transform: translateY(12px);
         }
-        .saved-card.card-visible { animation: cardIn 0.5s ease forwards; }
+        .saved-card.card-visible { animation: cardIn 0.4s ease forwards; }
         .saved-card.card-removing { animation: cardOut 0.3s ease forwards; }
         @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
         @keyframes cardOut { to { opacity: 0; transform: scale(0.95) translateY(8px); } }
-        .saved-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
-        .saved-card.card-visible:hover { transform: translateY(-4px); }
+        .saved-card:hover { box-shadow: var(--shadow-md); border-color: var(--border-hover); transform: translateY(-2px); }
+        .saved-card.card-visible:hover { transform: translateY(-2px); }
 
         .saved-card-image-wrapper {
           position: relative; width: 100%;
@@ -277,8 +278,8 @@ export default function SavedClient() {
         .saved-card-img-skeleton { position: absolute; inset: 0; background: var(--bg-skeleton); }
         .saved-card-img-fallback {
           width: 100%; height: 100%;
-          display: flex; align-items: center; justify-content: center;
-          background: linear-gradient(135deg, var(--bg-fallback-start) 0%, var(--bg-fallback-end) 100%);
+          display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+          background: var(--bg-elevated);
         }
         .saved-fallback-emoji { font-size: 36px; }
         .saved-source-pill {
@@ -302,12 +303,12 @@ export default function SavedClient() {
           margin: 0 0 12px;
         }
         .saved-card-impact {
-          background: var(--bg-accent); border-left: 3px solid #f59e0b;
-          border-radius: 0 8px 8px 0;
+          background: var(--primary-light); border-left: 3px solid var(--primary);
+          border-radius: 0 6px 6px 0;
           padding: 10px 12px; margin-bottom: 12px;
           display: flex; flex-direction: column; gap: 3px;
         }
-        .saved-impact-label { font-size: 10px; font-weight: 700; color: #d97706; text-transform: uppercase; letter-spacing: 0.06em; }
+        .saved-impact-label { font-size: 10px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.06em; }
         .saved-impact-text { font-size: 12.5px; color: var(--text-body); line-height: 1.4; margin: 0; }
         .saved-card-meta { font-size: 12px; color: var(--text-subtle); margin-top: auto; margin-bottom: 12px; }
         .saved-card-actions {
@@ -343,7 +344,7 @@ export default function SavedClient() {
         /* Skeleton */
         .saved-skeleton-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         @media (max-width: 768px) { .saved-skeleton-grid { grid-template-columns: 1fr; } }
-        .saved-skeleton-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
+        .saved-skeleton-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-default); overflow: hidden; box-shadow: var(--shadow-sm); }
         .saved-skeleton-img { aspect-ratio: 16/9; background: var(--bg-skeleton); }
         .saved-skeleton-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; }
         .saved-skeleton-line { height: 14px; border-radius: 6px; background: var(--bg-skeleton); }

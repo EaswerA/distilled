@@ -42,7 +42,7 @@ const SOURCE_COLORS: Record<string, string> = {
 const FALLBACK_GRADIENTS: Record<string, string> = {
   reddit:      "linear-gradient(135deg, #FF4500 0%, #FF6534 100%)",
   hackernews:  "linear-gradient(135deg, #FF6600 0%, #FF8C33 100%)",
-  devto:       "linear-gradient(135deg, #3B49DF 0%, #6470F0 100%)",
+  devto:       "linear-gradient(135deg, #374151 0%, #4B5563 100%)",
   rss:         "linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)",
 };
 
@@ -235,7 +235,7 @@ function ArticleCard({
         ) : (
           <div
             className="card-image-fallback"
-            style={{ background: FALLBACK_GRADIENTS[article.source] ?? "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+            style={{ background: FALLBACK_GRADIENTS[article.source] ?? "linear-gradient(135deg, #374151 0%, #4B5563 100%)" }}
           >
             <span className="fallback-emoji" style={{ fontSize: 44 }}>
               {article.topic?.emoji ?? sourceEmoji}
@@ -546,18 +546,19 @@ export default function FeedClient() {
 
         /* ===== ARTICLE CARD ===== */
         .article-card {
-          background: var(--bg-card); border-radius: 16px;
+          background: var(--bg-card); border-radius: 12px;
+          border: 1px solid var(--border-default);
           overflow: hidden;
           box-shadow: var(--shadow-sm);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.25s ease;
           display: flex; flex-direction: column;
-          opacity: 0; transform: translateY(16px);
+          opacity: 0; transform: translateY(12px);
         }
-        .article-card.card-visible { animation: cardIn 0.5s ease forwards; }
+        .article-card.card-visible { animation: cardIn 0.4s ease forwards; }
         @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
-        .article-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
-        .article-card.card-visible:hover { transform: translateY(-4px); }
-        .trending-card { border: 2px solid #fbbf24; box-shadow: 0 2px 12px rgba(251,191,36,0.15); }
+        .article-card:hover { box-shadow: var(--shadow-md); border-color: var(--border-hover); transform: translateY(-2px); }
+        .article-card.card-visible:hover { transform: translateY(-2px); }
+        .trending-card { border-color: #fbbf24; box-shadow: 0 2px 12px rgba(251,191,36,0.12); }
 
         /* Image wrapper */
         .card-image-wrapper {
@@ -572,7 +573,7 @@ export default function FeedClient() {
           width: 100%; height: 100%;
           display: flex; flex-direction: column;
           align-items: center; justify-content: center; gap: 8px;
-          background: linear-gradient(135deg, var(--bg-fallback-start) 0%, var(--bg-fallback-end) 100%);
+          background: var(--bg-elevated);
         }
         .fallback-emoji { font-size: 36px; }
         .fallback-source { font-size: 12px; font-weight: 600; color: var(--text-subtle); text-transform: uppercase; letter-spacing: 0.05em; }
@@ -605,12 +606,12 @@ export default function FeedClient() {
           margin: 0 0 12px;
         }
         .card-impact {
-          background: var(--bg-accent); border-left: 3px solid #f59e0b;
-          border-radius: 0 8px 8px 0;
+          background: var(--primary-light); border-left: 3px solid var(--primary);
+          border-radius: 0 6px 6px 0;
           padding: 10px 12px; margin-bottom: 12px;
           display: flex; flex-direction: column; gap: 3px;
         }
-        .impact-label { font-size: 10px; font-weight: 700; color: #d97706; text-transform: uppercase; letter-spacing: 0.06em; }
+        .impact-label { font-size: 10px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.06em; }
         .impact-text { font-size: 12.5px; color: var(--text-body); line-height: 1.4; margin: 0; }
         .card-reason {
           background: var(--bg-accent); border-left: 3px solid var(--primary);
@@ -694,7 +695,7 @@ export default function FeedClient() {
         /* ===== SKELETON ===== */
         .skeleton-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         @media (max-width: 768px) { .skeleton-grid { grid-template-columns: 1fr; } }
-        .skeleton-card { background: var(--bg-card); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
+        .skeleton-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-default); overflow: hidden; box-shadow: var(--shadow-sm); }
         .skeleton-image { aspect-ratio: 16/9; background: var(--bg-skeleton); }
         .skeleton-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; }
         .skeleton-badges { display: flex; gap: 8px; }

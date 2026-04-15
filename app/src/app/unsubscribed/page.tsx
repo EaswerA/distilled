@@ -11,7 +11,7 @@ export default function UnsubscribedPage() {
       <div style={{ textAlign: "center", maxWidth: 400, padding: "0 24px" }}>
         <div style={{
           width: 56, height: 56, borderRadius: 16,
-          background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+          background: "#f97316",
           display: "flex", alignItems: "center", justifyContent: "center",
           margin: "0 auto 24px", color: "white", fontWeight: 800, fontSize: 24,
         }}>D</div>

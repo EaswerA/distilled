@@ -153,8 +153,8 @@ export default function AuthPage() {
         /* Branding */
         .auth-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
         .auth-brand-icon {
-          width: 44px; height: 44px; border-radius: 12px;
-          background: linear-gradient(135deg, var(--gradient-brand-start), var(--gradient-brand-end));
+          width: 44px; height: 44px; border-radius: 10px;
+          background: var(--primary);
           display: flex; align-items: center; justify-content: center;
           color: white; font-weight: 800; font-size: 20px;
         }
@@ -178,7 +178,8 @@ export default function AuthPage() {
 
         /* Card */
         .auth-card {
-          background: var(--bg-card); border-radius: 20px;
+          background: var(--bg-card); border-radius: 14px;
+          border: 1px solid var(--border-default);
           padding: 32px; width: 100%;
           box-shadow: var(--shadow-sm);
           transition: background 0.3s ease;
@@ -494,7 +495,7 @@ export default function AuthPage() {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    style={{ width: 15, height: 15, accentColor: "#6366f1", cursor: "pointer" }}
+                    style={{ width: 15, height: 15, accentColor: "#f97316", cursor: "pointer" }}
                   />
                   Remember me
                 </label>

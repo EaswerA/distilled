@@ -30,7 +30,8 @@ export default function WelcomeModal() {
       onClick={(e) => { if (e.target === e.currentTarget) dismiss(); }}
     >
       <div style={{
-        background: "var(--bg-card)", borderRadius: 20,
+        background: "var(--bg-card)", borderRadius: 16,
+        border: "1px solid var(--border-default)",
         padding: "36px 32px", maxWidth: 460, width: "100%",
         boxShadow: "0 24px 80px rgba(0,0,0,0.3)",
         animation: "slideUp 0.25s ease",
@@ -38,8 +39,8 @@ export default function WelcomeModal() {
         {/* Logo + Title */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
           <div style={{
-            width: 44, height: 44, borderRadius: 12,
-            background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+            width: 44, height: 44, borderRadius: 10,
+            background: "var(--primary)",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontWeight: 800, fontSize: 22, color: "white", flexShrink: 0,
           }}>D</div>
@@ -79,9 +80,9 @@ export default function WelcomeModal() {
         <button
           onClick={dismiss}
           style={{
-            width: "100%", padding: "14px", borderRadius: 12, border: "none",
-            background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-            color: "white", fontSize: 15, fontWeight: 700, cursor: "pointer",
+            width: "100%", padding: "14px", borderRadius: 10, border: "none",
+            background: "var(--btn-dark)",
+            color: "var(--text-inverse)", fontSize: 15, fontWeight: 700, cursor: "pointer",
             letterSpacing: "-0.2px",
           }}
         >

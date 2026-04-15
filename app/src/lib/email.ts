@@ -14,7 +14,7 @@ export async function sendVerificationEmail(email: string, token: string) {
     html: `
       <div style="font-family: Inter, -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px; background: #ffffff;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 32px;">
-          <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; text-align: center; line-height: 44px;">D</div>
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: #f97316; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; text-align: center; line-height: 44px;">D</div>
           <span style="font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">Distilled</span>
         </div>
 
@@ -54,13 +54,13 @@ export async function sendDigestEmail(
     .map(
       (a) => `
       <div style="padding: 16px 0; border-bottom: 1px solid #f1f5f9;">
-        <div style="font-size: 11px; font-weight: 600; color: #6366f1; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">
+        <div style="font-size: 11px; font-weight: 600; color: #f97316; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">
           ${a.topicEmoji ? a.topicEmoji + " " : ""}${a.topicName ?? a.source}
         </div>
         <a href="${a.url}" style="font-size: 15px; font-weight: 700; color: #0f172a; text-decoration: none; line-height: 1.4; display: block; margin-bottom: 8px;">
           ${a.title}
         </a>
-        <a href="${a.url}" style="font-size: 13px; color: #6366f1; text-decoration: none; font-weight: 600;">
+        <a href="${a.url}" style="font-size: 13px; color: #f97316; text-decoration: none; font-weight: 600;">
           Read article →
         </a>
       </div>`
@@ -74,7 +74,7 @@ export async function sendDigestEmail(
     html: `
       <div style="font-family: Inter, -apple-system, sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 24px; background: #ffffff;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 32px;">
-          <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; text-align: center; line-height: 44px;">D</div>
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: #f97316; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; text-align: center; line-height: 44px;">D</div>
           <span style="font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">Distilled</span>
         </div>
 
@@ -95,7 +95,7 @@ export async function sendDigestEmail(
 
         <p style="font-size: 12px; color: #94a3b8; margin: 28px 0 0; line-height: 1.6;">
           You're receiving this because you set your digest frequency to ${frequencyLabel.toLowerCase()} in Distilled.
-          <a href="${process.env.NEXTAUTH_URL}/preferences" style="color: #6366f1;">Change preferences</a> ·
+          <a href="${process.env.NEXTAUTH_URL}/preferences" style="color: #f97316;">Change preferences</a> ·
           <a href="${unsubscribeUrl}" style="color: #94a3b8;">Unsubscribe</a>
         </p>
       </div>
@@ -118,7 +118,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     html: `
       <div style="font-family: Inter, -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px; background: #ffffff;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 32px;">
-          <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; text-align: center; line-height: 44px;">D</div>
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: #f97316; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 20px; text-align: center; line-height: 44px;">D</div>
           <span style="font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">Distilled</span>
         </div>
 
