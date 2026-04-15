@@ -839,12 +839,6 @@ export default function FeedClient() {
           <>
             <div className="feed-hero">
               <h1 className="feed-greeting">Your Feed</h1>
-              <p className="feed-subtitle">
-                <strong>{filtered.filter(a => !a._isTrending).length}</strong> articles
-                {(() => { const n = filtered.filter(a => a._isTrending).length; return n > 0 ? <> + <strong>{n} trending</strong></> : null; })()}
-                {" "}from{" "}
-                <strong>{feed.preferences.topics.join(", ")}</strong>
-              </p>
             </div>
 
             <div className="filter-bar">
