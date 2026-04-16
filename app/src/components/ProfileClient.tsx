@@ -577,7 +577,7 @@ export default function ProfileClient() {
                       <Tooltip
                         contentStyle={{ background: "var(--bg-elevated)", border: "1px solid var(--border-default)", borderRadius: 10, fontSize: 13, color: "var(--text-heading)" }}
                         itemStyle={{ color: "var(--text-body)" }}
-                        formatter={(val, _, props: any) => [`${val} weight`, `${props.payload.emoji} ${props.payload.name}`]}
+                        formatter={(val, _, props: any) => [`${val} weight`, props.payload.name]}
                         labelFormatter={() => ""}
                       />
                       <Bar
@@ -598,7 +598,7 @@ export default function ProfileClient() {
                     {data.topicWeights.map((t, i) => (
                       <div key={t.name} className="topic-weight-row">
                         <span className="topic-weight-label">
-                          {t.emoji} {t.name}
+                          {t.name}
                           {t.status === "PAUSED" && <span className="topic-paused-badge" style={{ marginLeft: 6 }}>Paused</span>}
                         </span>
                         <div className="topic-weight-bar-bg">

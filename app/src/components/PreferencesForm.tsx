@@ -388,7 +388,6 @@ export default function PreferencesForm({
                 className={`topic-chip ${selectedTopics.has(topic.id) ? "selected" : ""} ${pausedTopics.has(topic.id) ? "paused" : ""}`}
                 onClick={() => toggleTopic(topic.id)}
               >
-                {topic.emoji && <span>{topic.emoji}</span>}
                 {topic.name}
               </button>
             ))}
@@ -411,7 +410,7 @@ export default function PreferencesForm({
                 .map((topic) => (
                   <div key={topic.id} className="pause-row">
                     <span className="pause-topic-name">
-                      {topic.emoji} {topic.name}
+                      {topic.name}
                     </span>
                     <button
                       className={`pause-toggle ${pausedTopics.has(topic.id) ? "paused" : "active"}`}

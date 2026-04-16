@@ -150,7 +150,6 @@ export default function InterestCheckModal() {
                     transition: "all 0.15s ease",
                   }}
                 >
-                  {topic.emoji && <span style={{ fontSize: 14 }}>{topic.emoji}</span>}
                   {topic.name}
                 </button>
               );
