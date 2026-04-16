@@ -420,7 +420,7 @@ export default function ProfileClient() {
                     />
                     <Tooltip
                       contentStyle={{ background: "var(--bg-elevated)", border: "1px solid var(--border-default)", borderRadius: 10, fontSize: 12, color: "var(--text-heading)" }}
-                      formatter={(val: number) => [`${val} min`, "Time spent"]}
+                      formatter={(val) => [`${val ?? 0} min`, "Time spent"]}
                       cursor={{ fill: "var(--primary-light)" }}
                     />
                     <Bar
