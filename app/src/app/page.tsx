@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import LandingInstallButton from "@/components/LandingInstallButton";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -31,11 +32,11 @@ export default async function Home() {
         }
         .lp-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
         .lp-logo-icon {
-          width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+          width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
           overflow: hidden;
         }
         .lp-logo-icon img { width: 100%; height: 100%; display: block; }
-        .lp-logo-name { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+        .lp-logo-name { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
         .lp-nav-right { display: flex; align-items: center; gap: 6px; }
         .lp-nav-signin {
           font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.45);
@@ -403,6 +404,7 @@ export default async function Home() {
               See how it works
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 9l-7 7-7-7"/></svg>
             </a>
+            <LandingInstallButton />
           </div>
 
           <div className="lp-hero-proof">

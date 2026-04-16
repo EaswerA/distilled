@@ -116,12 +116,12 @@ export default function NavBar({ currentPage }: { currentPage: Page }) {
           cursor: pointer; text-decoration: none; user-select: none;
         }
         .app-brand-icon {
-          width: 28px; height: 28px; border-radius: 6px;
+          width: 32px; height: 32px; border-radius: 7px;
           overflow: hidden; flex-shrink: 0;
         }
         .app-brand-icon img { width: 100%; height: 100%; display: block; }
         .app-brand-name {
-          font-size: 16px; font-weight: 700;
+          font-size: 17px; font-weight: 700;
           color: var(--text-heading); letter-spacing: -0.3px;
         }
 
