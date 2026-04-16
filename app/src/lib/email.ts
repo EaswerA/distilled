@@ -10,7 +10,7 @@ export async function sendVerificationEmail(email: string, token: string) {
   const { error } = await resend.emails.send({
     from: FROM_ADDRESS,
     to: email,
-    subject: "Verify your email — Distilled",
+    subject: "Verify your email | Distilled",
     html: `
       <div style="font-family: Inter, -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px; background: #ffffff;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 32px;">
@@ -70,7 +70,7 @@ export async function sendDigestEmail(
   const { error } = await resend.emails.send({
     from: FROM_ADDRESS,
     to: email,
-    subject: `Your ${frequencyLabel} Digest — Distilled`,
+    subject: `Your ${frequencyLabel} Digest | Distilled`,
     html: `
       <div style="font-family: Inter, -apple-system, sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 24px; background: #ffffff;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 32px;">
@@ -114,7 +114,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   const { error } = await resend.emails.send({
     from: FROM_ADDRESS,
     to: email,
-    subject: "Reset your password — Distilled",
+    subject: "Reset your password | Distilled",
     html: `
       <div style="font-family: Inter, -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px; background: #ffffff;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 32px;">

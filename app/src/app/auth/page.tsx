@@ -4,6 +4,8 @@ import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
+import AvatarPicker from "@/components/AvatarPicker";
+import { AVATAR_SEEDS } from "@/lib/avatars";
 
 export default function AuthPage() {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
@@ -16,6 +18,8 @@ export default function AuthPage() {
   const [checkEmail, setCheckEmail] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [avatarStep, setAvatarStep] = useState(false);
+  const [pendingAvatar, setPendingAvatar] = useState(AVATAR_SEEDS[0]);
   const router = useRouter();
 
   const searchParams = typeof window !== "undefined"
@@ -68,18 +72,9 @@ export default function AuthPage() {
           setLoading(false);
           return;
         }
-
-        const res = await fetch("/api/auth/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password }),
-        });
-
-        const data = await res.json();
-        if (!res.ok) { setError(data.error); setLoading(false); return; }
-
-        setCheckEmail(true);
+        // Show avatar picker before creating account
         setLoading(false);
+        setAvatarStep(true);
         return;
       }
 
@@ -364,7 +359,7 @@ export default function AuthPage() {
               Your feed,<br />actually worth<br />reading.
             </h2>
             <p className="auth-left-sub">
-              Curated from Reddit, Hacker News, Dev.to, and RSS — ranked by your interests, summarized by AI.
+              Curated from Reddit, Hacker News, Dev.to, and RSS. Ranked by your interests, summarized by AI.
             </p>
             <div className="auth-left-features">
               {[
@@ -410,7 +405,35 @@ export default function AuthPage() {
             )}
 
           <div className="auth-card">
-            {checkEmail ? (
+            {avatarStep ? (
+              <AvatarPicker
+                mode="inline"
+                currentSeed={pendingAvatar}
+                saveLabel="Continue"
+                cancelLabel="Back"
+                onCancel={() => setAvatarStep(false)}
+                onSave={async (seed) => {
+                  setPendingAvatar(seed);
+                  setLoading(true);
+                  setError("");
+                  try {
+                    const res = await fetch("/api/auth/signup", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name, email, password, avatarSeed: seed }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) { setError(data.error); setAvatarStep(false); }
+                    else { setAvatarStep(false); setCheckEmail(true); }
+                  } catch {
+                    setError("Network error. Please try again.");
+                    setAvatarStep(false);
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+              />
+            ) : checkEmail ? (
               <>
                 <div className="check-email-icon">📬</div>
                 <h2 className="check-email-title">Check your email</h2>

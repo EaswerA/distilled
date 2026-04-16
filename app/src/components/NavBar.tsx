@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import ThemeToggle from "./ThemeToggle";
+import { avatarUrl } from "@/lib/avatars";
 
 type Page = "feed" | "saved" | "profile" | "preferences";
 
@@ -193,7 +194,10 @@ export default function NavBar({ currentPage }: { currentPage: Page }) {
           background: var(--primary);
           display: flex; align-items: center; justify-content: center;
           font-size: 14px; font-weight: 700; color: #fff;
-          flex-shrink: 0;
+          flex-shrink: 0; overflow: hidden;
+        }
+        .drawer-avatar img {
+          width: 100%; height: 100%; object-fit: cover;
         }
         .drawer-user-info { flex: 1; min-width: 0; }
         .drawer-user-name {
@@ -303,7 +307,11 @@ export default function NavBar({ currentPage }: { currentPage: Page }) {
 
       <div className={`app-drawer ${open ? "open" : ""}`} role="dialog" aria-modal="true">
         <div className="drawer-header">
-          <div className="drawer-avatar">{initials}</div>
+          <div className="drawer-avatar">
+            {session?.user?.avatarSeed
+              ? <img src={avatarUrl(session.user.avatarSeed)} alt="avatar" />
+              : initials}
+          </div>
           <div className="drawer-user-info">
             <div className="drawer-user-name">{name}</div>
             {session?.user?.email && (

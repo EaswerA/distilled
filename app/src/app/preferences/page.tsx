@@ -31,6 +31,7 @@ export default async function PreferencesPage() {
       initialPausedTopicIds={pausedTopicIds}
       initialPostCount={userPrefs?.postCount ?? 20}
       initialFrequency={(userPrefs?.frequency as "DAILY" | "WEEKLY" | "MONTHLY") ?? "DAILY"}
+      initialShowTrending={userPrefs?.showTrending ?? true}
     />
   );
 }

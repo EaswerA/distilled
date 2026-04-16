@@ -23,7 +23,7 @@ export async function GET() {
     ]);
 
     return NextResponse.json({
-      preferences: preferences ?? { postCount: 20, frequency: "DAILY" },
+      preferences: preferences ?? { postCount: 20, frequency: "DAILY", hideInterestPrompt: false, showTrending: true },
       topics: userTopics.map((ut) => ({
         id: ut.topic.id,
         slug: ut.topic.slug,
@@ -48,10 +48,12 @@ export async function POST(req: Request) {
 
     const userId = session.user.id;
     const body = await req.json();
-    const { topicIds, postCount, frequency } = body as {
+    const { topicIds, postCount, frequency, hideInterestPrompt, showTrending } = body as {
       topicIds: string[];
       postCount: number;
       frequency: "DAILY" | "WEEKLY" | "MONTHLY";
+      hideInterestPrompt?: boolean;
+      showTrending?: boolean;
     };
 
     if (!Array.isArray(topicIds) || topicIds.length === 0) {
@@ -91,8 +93,19 @@ export async function POST(req: Request) {
 
     await prisma.userPreference.upsert({
       where: { userId },
-      update: { postCount, frequency },
-      create: { userId, postCount, frequency },
+      update: {
+        postCount,
+        frequency,
+        ...(hideInterestPrompt !== undefined && { hideInterestPrompt }),
+        ...(showTrending !== undefined && { showTrending }),
+      },
+      create: {
+        userId,
+        postCount,
+        frequency,
+        hideInterestPrompt: hideInterestPrompt ?? false,
+        showTrending: showTrending ?? true,
+      },
     });
 
     const existingUserTopics = await prisma.userTopic.findMany({ where: { userId } });

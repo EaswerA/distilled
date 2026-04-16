@@ -17,6 +17,7 @@ type Props = {
   initialPausedTopicIds?: string[];
   initialPostCount?: number;
   initialFrequency?: "DAILY" | "WEEKLY" | "MONTHLY";
+  initialShowTrending?: boolean;
   mode: "onboarding" | "preferences";
   userId: string;
 };
@@ -33,6 +34,7 @@ export default function PreferencesForm({
   initialPausedTopicIds = [],
   initialPostCount = 20,
   initialFrequency = "DAILY",
+  initialShowTrending = true,
   mode,
   userId,
 }: Props) {
@@ -41,6 +43,7 @@ export default function PreferencesForm({
   const [pausedTopics, setPausedTopics] = useState<Set<string>>(new Set(initialPausedTopicIds));
   const [postCount, setPostCount] = useState(initialPostCount);
   const [frequency, setFrequency] = useState<"DAILY" | "WEEKLY" | "MONTHLY">(initialFrequency);
+  const [showTrending, setShowTrending] = useState(initialShowTrending);
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [resetDone, setResetDone] = useState(false);
@@ -114,6 +117,7 @@ export default function PreferencesForm({
           topicIds: Array.from(selectedTopics),
           postCount,
           frequency,
+          showTrending,
           userId,
         }),
       });
@@ -290,6 +294,33 @@ export default function PreferencesForm({
         .reset-btn:hover { border-color: var(--text-error); color: var(--text-error); background: var(--bg-error); }
         .reset-btn.done { border-color: var(--border-success); color: var(--text-success); background: var(--bg-success); }
 
+        /* Toggle switch */
+        .toggle-row {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 14px 0;
+        }
+        .toggle-row + .toggle-row { border-top: 1px solid var(--border-divider); }
+        .toggle-label { font-size: 14px; font-weight: 600; color: var(--text-body); }
+        .toggle-desc { font-size: 12px; color: var(--text-subtle); margin-top: 2px; }
+        .toggle-switch {
+          position: relative; width: 44px; height: 24px; flex-shrink: 0;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-track {
+          position: absolute; inset: 0; border-radius: 999px;
+          background: var(--bg-toggle); cursor: pointer;
+          transition: background 0.2s ease;
+        }
+        .toggle-track::after {
+          content: ""; position: absolute;
+          width: 18px; height: 18px; border-radius: 50%;
+          background: white; top: 3px; left: 3px;
+          transition: transform 0.2s ease;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        input:checked + .toggle-track { background: var(--primary); }
+        input:checked + .toggle-track::after { transform: translateX(20px); }
+
         /* Error & Submit */
         .error-msg {
           color: var(--text-error); font-size: 13px; text-align: center;
@@ -432,6 +463,27 @@ export default function PreferencesForm({
           </div>
           <p className="slider-hint">10 minimum · {maxPosts} maximum for {frequency.toLowerCase()} feeds</p>
         </div>
+
+        {mode === "preferences" && (
+          <div className="section">
+            <h2 className="section-title">Feed Options</h2>
+            <p className="section-desc">Customize what appears in your feed.</p>
+            <div className="toggle-row">
+              <div>
+                <div className="toggle-label">Show trending posts</div>
+                <div className="toggle-desc">Includes 2 trending articles from across all topics, not just yours.</div>
+              </div>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={showTrending}
+                  onChange={(e) => setShowTrending(e.target.checked)}
+                />
+                <span className="toggle-track" />
+              </label>
+            </div>
+          </div>
+        )}
 
         {mode === "preferences" && (
           <div className="section">

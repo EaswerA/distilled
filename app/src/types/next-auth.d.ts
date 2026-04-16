@@ -10,6 +10,7 @@ declare module "next-auth" {
       role?: string;
       mustChangePassword?: boolean;
       onboarded?: boolean;
+      avatarSeed?: string | null;
     };
   }
 }

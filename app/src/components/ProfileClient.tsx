@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import NavBar from "./NavBar";
+import AvatarPicker from "./AvatarPicker";
+import { avatarUrl } from "@/lib/avatars";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, Legend, CartesianGrid,
@@ -13,12 +15,27 @@ const TOPIC_COLORS = [
 ];
 
 type ProfileData = {
-  user: { name: string | null; email: string; createdAt: string };
+  user: { name: string | null; email: string; createdAt: string; avatarSeed: string | null };
   stats: { likes: number; saves: number; clicks: number };
   topicWeights: { name: string; emoji: string; weight: number; status: string }[];
   weeklyActivity: Record<string, string | number>[];
   weeklyTopicNames: string[];
+  usage: {
+    totalSeconds: number;
+    todaySeconds: number;
+    avgSeconds: number;
+    chart: { date: string; minutes: number }[];
+  };
 };
+
+function formatTime(seconds: number): string {
+  if (seconds < 60) return seconds > 0 ? `${seconds}s` : "0m";
+  const mins = Math.floor(seconds / 60);
+  if (mins < 60) return `${mins}m`;
+  const hours = Math.floor(mins / 60);
+  const rem = mins % 60;
+  return rem > 0 ? `${hours}h ${rem}m` : `${hours}h`;
+}
 
 type ChangePwForm = { currentPassword: string; newPassword: string; confirmPassword: string };
 
@@ -41,6 +58,9 @@ export default function ProfileClient() {
   const [pwError, setPwError] = useState("");
   const [pwSuccess, setPwSuccess] = useState("");
   const [showPw, setShowPw] = useState(false);
+
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [avatarSaving, setAvatarSaving] = useState(false);
 
   const [showReport, setShowReport] = useState(false);
   const [reportMsg, setReportMsg] = useState("");
@@ -127,7 +147,19 @@ export default function ProfileClient() {
           background: var(--primary);
           display: flex; align-items: center; justify-content: center;
           font-size: 28px; font-weight: 800; color: white; letter-spacing: -1px;
+          cursor: pointer; overflow: hidden; position: relative;
+          transition: box-shadow 0.2s ease, transform 0.15s ease;
         }
+        .prof-avatar:hover { box-shadow: 0 0 0 3px var(--primary-light), 0 0 0 5px var(--primary); transform: scale(1.04); }
+        .prof-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .prof-avatar-overlay {
+          position: absolute; inset: 0; border-radius: 14px;
+          background: rgba(0,0,0,0.45);
+          display: flex; align-items: center; justify-content: center;
+          opacity: 0; transition: opacity 0.15s ease;
+          color: #fff; font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+        }
+        .prof-avatar:hover .prof-avatar-overlay { opacity: 1; }
         .prof-info { flex: 1; min-width: 0; }
         .prof-name { font-size: 22px; font-weight: 800; color: var(--text-heading); letter-spacing: -0.5px; margin-bottom: 4px; }
         .prof-email { font-size: 14px; color: var(--text-subtle); margin-bottom: 10px; }
@@ -240,6 +272,20 @@ export default function ProfileClient() {
         .prof-report-success { background: #dcfce7; color: #16a34a; font-size: 13px; font-weight: 600; padding: 10px 14px; border-radius: 10px; }
         .prof-report-char { font-size: 11px; color: var(--text-subtle); text-align: right; }
 
+        /* Reading habits */
+        .prof-habits-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .prof-habit-stat {
+          background: var(--bg-elevated); border-radius: 10px;
+          border: 1px solid var(--border-divider);
+          padding: 16px; text-align: center;
+        }
+        .prof-habit-value { font-size: 24px; font-weight: 800; color: var(--text-heading); letter-spacing: -0.5px; }
+        .prof-habit-label { font-size: 11px; color: var(--text-subtle); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+        @media (max-width: 480px) {
+          .prof-habits-stats { grid-template-columns: 1fr; }
+        }
+
         /* Empty state */
         .prof-empty { text-align: center; padding: 40px 20px; color: var(--text-subtle); font-size: 14px; }
 
@@ -266,6 +312,7 @@ export default function ProfileClient() {
             <div className="prof-stats">
               {[1,2,3].map(i => <div key={i} className="shimmer" style={{ height: 90 }} />)}
             </div>
+            <div className="shimmer" style={{ height: 260 }} />
             <div className="shimmer" style={{ height: 280 }} />
             <div className="shimmer" style={{ height: 280 }} />
           </>
@@ -274,9 +321,36 @@ export default function ProfileClient() {
         ) : (
           <>
             {/* Hero */}
+            {showAvatarPicker && (
+              <AvatarPicker
+                mode="modal"
+                currentSeed={data.user.avatarSeed ?? undefined}
+                saveLabel={avatarSaving ? "Saving..." : "Save avatar"}
+                onCancel={() => setShowAvatarPicker(false)}
+                onSave={async (seed) => {
+                  setAvatarSaving(true);
+                  try {
+                    const res = await fetch("/api/profile/avatar", {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ seed }),
+                    });
+                    if (res.ok) {
+                      setData((prev) => prev ? { ...prev, user: { ...prev.user, avatarSeed: seed } } : prev);
+                      setShowAvatarPicker(false);
+                    }
+                  } finally {
+                    setAvatarSaving(false);
+                  }
+                }}
+              />
+            )}
             <div className="prof-hero">
-              <div className="prof-avatar">
-                {(data.user.name ?? data.user.email).slice(0, 2).toUpperCase()}
+              <div className="prof-avatar" onClick={() => setShowAvatarPicker(true)} title="Change avatar">
+                {data.user.avatarSeed
+                  ? <img src={avatarUrl(data.user.avatarSeed)} alt="avatar" />
+                  : (data.user.name ?? data.user.email).slice(0, 2).toUpperCase()}
+                <span className="prof-avatar-overlay">Edit</span>
               </div>
               <div className="prof-info">
                 <div className="prof-name">{data.user.name ?? "No name set"}</div>
@@ -301,6 +375,63 @@ export default function ProfileClient() {
                 <div className="prof-stat-value">{data.stats.clicks}</div>
                 <div className="prof-stat-label">👆 Read</div>
               </div>
+            </div>
+
+            {/* Reading Habits */}
+            <div className="prof-card">
+              <div className="prof-card-title">Reading Habits</div>
+              <div className="prof-card-desc">Time spent on Distilled — only counts when the tab is active.</div>
+
+              <div className="prof-habits-stats">
+                <div className="prof-habit-stat">
+                  <div className="prof-habit-value">{formatTime(data.usage.totalSeconds)}</div>
+                  <div className="prof-habit-label">Total time</div>
+                </div>
+                <div className="prof-habit-stat">
+                  <div className="prof-habit-value">{formatTime(data.usage.todaySeconds)}</div>
+                  <div className="prof-habit-label">Today</div>
+                </div>
+                <div className="prof-habit-stat">
+                  <div className="prof-habit-value">{formatTime(data.usage.avgSeconds)}</div>
+                  <div className="prof-habit-label">Daily avg</div>
+                </div>
+              </div>
+
+              {data.usage.chart.every((d) => d.minutes === 0) ? (
+                <div className="prof-empty" style={{ padding: "24px 0 8px" }}>
+                  No data yet. Come back after your first reading session.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={data.usage.chart} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 10, fill: "var(--text-subtle)" }}
+                      tickLine={false}
+                      axisLine={false}
+                      interval={1}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: "var(--text-subtle)" }}
+                      tickLine={false}
+                      axisLine={false}
+                      allowDecimals={false}
+                      unit="m"
+                    />
+                    <Tooltip
+                      contentStyle={{ background: "var(--bg-elevated)", border: "1px solid var(--border-default)", borderRadius: 10, fontSize: 12, color: "var(--text-heading)" }}
+                      formatter={(val: number) => [`${val} min`, "Time spent"]}
+                      cursor={{ fill: "var(--primary-light)" }}
+                    />
+                    <Bar
+                      dataKey="minutes"
+                      fill="var(--primary)"
+                      radius={[4, 4, 0, 0]}
+                      maxBarSize={32}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
 
             {/* Change Password */}

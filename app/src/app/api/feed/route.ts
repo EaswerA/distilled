@@ -60,6 +60,7 @@ export async function GET() {
       frequency,
       userPreference?.postCount ?? 20
     );
+    const showTrending = userPreference?.showTrending ?? true;
     const topicIds = userTopics.map((ut) => ut.topicId);
 
     if (topicIds.length === 0) {
@@ -121,8 +122,10 @@ export async function GET() {
       _reason: generateReason(a, topicWeightMap, a._isTrending ?? false),
     }));
 
-    // Trend slot injection
-    const finalArticles = await injectTrendSlots(articlesWithState, topicIds);
+    // Trend slot injection (skipped if user disabled trending)
+    const finalArticles = showTrending
+      ? await injectTrendSlots(articlesWithState, topicIds)
+      : articlesWithState;
 
     const response = {
       articles: finalArticles,

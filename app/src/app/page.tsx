@@ -391,7 +391,7 @@ export default async function Home() {
           </h1>
 
           <p className="lp-hero-sub">
-            Distilled pulls from <strong>Reddit, Hacker News, Dev.to, and RSS</strong> — then ranks, filters, and summarizes everything based on topics you actually care about.
+            Distilled pulls from <strong>Reddit, Hacker News, Dev.to, and RSS</strong>, then ranks, filters, and summarizes everything based on topics you actually care about.
           </p>
 
           <div className="lp-hero-actions">
@@ -432,7 +432,7 @@ export default async function Home() {
               </div>
               <div className="lp-mock-body">
                 <div className="lp-mock-topic">🤖 AI & Machine Learning</div>
-                <div className="lp-mock-title">OpenAI's o3 achieves 87.7% on ARC-AGI — a 25-point jump over GPT-4</div>
+                <div className="lp-mock-title">OpenAI's o3 achieves 87.7% on ARC-AGI, a 25-point jump over GPT-4</div>
                 <div className="lp-mock-summary">The new reasoning model surpasses prior benchmarks by a wide margin, with particularly strong gains in abstract problem-solving and code tasks.</div>
                 <div className="lp-mock-impact">
                   <div className="lp-mock-impact-label">💡 How this affects you</div>
@@ -486,12 +486,12 @@ export default async function Home() {
             <p className="lp-overline">AI intelligence</p>
             <h2 className="lp-h2">Stop skimming.<br />Read what matters.</h2>
             <p className="lp-h2-sub" style={{ marginBottom: 32 }}>
-              Every article gets a two-sentence summary and a plain-English explanation of how it affects you — developers, investors, or consumers — specifically.
+              Every article gets a two-sentence summary and a plain-English explanation of how it affects you: developers, investors, or consumers, specifically.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
                 { icon: "📝", text: "2–3 sentence neutral summary of the article" },
-                { icon: "💡", text: "\"How this affects you\" — direct, no fluff" },
+                { icon: "💡", text: "\"How this affects you\": direct, no fluff" },
                 { icon: "❓", text: "Tap ? on any card to see exactly why it was shown" },
               ].map((item) => (
                 <div key={item.text} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
@@ -508,7 +508,7 @@ export default async function Home() {
                 <div className="lp-impact-demo-text">The Tokio team officially stabilized several long-awaited APIs and removed deprecated patterns that had accumulated since 2019, marking a turning point for the async ecosystem.</div>
                 <div className="lp-impact-demo-block">
                   <div className="lp-impact-demo-block-label">💡 How this affects you</div>
-                  <div className="lp-impact-demo-block-text">Rust developers using async I/O will need to update 1-2 call sites per project — migration guide is straightforward and worth the improved ergonomics.</div>
+                  <div className="lp-impact-demo-block-text">Rust developers using async I/O will need to update 1-2 call sites per project. Migration is straightforward and worth the improved ergonomics.</div>
                 </div>
               </div>
               <div className="lp-impact-demo-card" style={{ opacity: 0.5 }}>
@@ -531,7 +531,7 @@ export default async function Home() {
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
-                "No black-box algorithm — you can see and adjust topic weights",
+                "No black-box algorithm. You can see and adjust topic weights",
                 "New articles re-ranked every few hours from fresh sources",
                 "Trending articles from across your topics surface automatically",
               ].map((text) => (
@@ -570,7 +570,7 @@ export default async function Home() {
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 10, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase" }}>Your ranked feed</div>
               <div className="lp-feed-preview">
                 {[
-                  { dot: "#f97316", text: "OpenAI releases o3 for API access — pricing details", src: "HN" },
+                  { dot: "#f97316", text: "OpenAI releases o3 for API access, pricing details inside", src: "HN" },
                   { dot: "#0ea5e9", text: "Bun 1.2 ships built-in PostgreSQL driver", src: "Dev.to" },
                   { dot: "#10b981", text: "S&P 500 closes 2.4% up on Fed minutes release", src: "RSS" },
                 ].map((row) => (
@@ -597,7 +597,7 @@ export default async function Home() {
             <div className="lp-step">
               <div className="lp-step-num">01</div>
               <div className="lp-step-title">Pick your topics</div>
-              <div className="lp-step-desc">Choose from 20+ categories — AI, Finance, Security, Gaming, and more. Your feed is built around what you select.</div>
+              <div className="lp-step-desc">Choose from 20+ categories: AI, Finance, Security, Gaming, and more. Your feed is built around what you select.</div>
             </div>
             <div className="lp-step">
               <div className="lp-step-num">02</div>
@@ -607,7 +607,7 @@ export default async function Home() {
             <div className="lp-step">
               <div className="lp-step-num">03</div>
               <div className="lp-step-title">Read on your schedule</div>
-              <div className="lp-step-desc">Open the feed when you want. Or get a curated digest by email — daily, weekly, or monthly, with just the highlights.</div>
+              <div className="lp-step-desc">Open the feed when you want. Or get a curated digest by email: daily, weekly, or monthly, with just the highlights.</div>
             </div>
           </div>
         </div>
@@ -624,7 +624,7 @@ export default async function Home() {
           <div className="lp-grid-card">
             <span className="lp-grid-card-icon">📬</span>
             <div className="lp-grid-card-title">Email digests that don't suck</div>
-            <div className="lp-grid-card-desc">Choose daily, weekly, or monthly delivery. Each digest includes your top articles with summaries — no links to click if you don't want to.</div>
+            <div className="lp-grid-card-desc">Choose daily, weekly, or monthly delivery. Each digest includes your top articles with summaries. No need to click through if you don't want to.</div>
             <div className="lp-digest-demo">
               <div className="lp-digest-header">
                 <div className="lp-digest-from">From: <strong>Distilled Weekly</strong> · Your 5 top stories</div>
@@ -632,7 +632,7 @@ export default async function Home() {
               <div className="lp-digest-body">
                 {[
                   "OpenAI o3 achieves human-level scores on ARC benchmark",
-                  "Rust async stabilization — what changes in your code",
+                  "Rust async stabilization: what changes in your code",
                   "Fed signals two cuts in Q3 as CPI drops to 2.1%",
                 ].map((text, i) => (
                   <div key={text} className="lp-digest-item">
@@ -646,12 +646,12 @@ export default async function Home() {
           <div className="lp-grid-card">
             <span className="lp-grid-card-icon">📌</span>
             <div className="lp-grid-card-title">Save for later</div>
-            <div className="lp-grid-card-desc">Bookmark any article with one tap. Your saved list is always there — synced, searchable, organized by when you saved it.</div>
+            <div className="lp-grid-card-desc">Bookmark any article with one tap. Your saved list is always there, synced and searchable, organized by when you saved it.</div>
           </div>
           <div className="lp-grid-card">
             <span className="lp-grid-card-icon">🌗</span>
             <div className="lp-grid-card-title">Light and dark mode</div>
-            <div className="lp-grid-card-desc">Toggle between modes manually or follow your system preference. Both are carefully designed — not just an inverted palette.</div>
+            <div className="lp-grid-card-desc">Toggle between modes manually or follow your system preference. Both are carefully designed, not just an inverted palette.</div>
           </div>
         </div>
       </section>

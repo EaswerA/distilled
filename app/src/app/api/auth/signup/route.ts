@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   try {
     const parsed = await parseJsonBody(req);
     if ("error" in parsed) return parsed.error;
-    const { name, email, password } = parsed.data;
+    const { name, email, password, avatarSeed } = parsed.data;
 
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password required" }, { status: 400 });
@@ -66,7 +66,12 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     await prisma.user.create({
-      data: { name, email, password: hashedPassword },
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        ...(avatarSeed && typeof avatarSeed === "string" ? { avatarSeed } : {}),
+      },
     });
 
     // Generate a verification token valid for 24 hours
