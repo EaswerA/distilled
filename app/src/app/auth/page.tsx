@@ -32,7 +32,6 @@ export default function AuthPage() {
   const pwRules = mode === "signup" ? [
     { label: "At least 8 characters", met: password.length >= 8 },
     { label: "One uppercase letter", met: /[A-Z]/.test(password) },
-    { label: "One special character", met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password) },
   ] : [];
 
   async function handleForgotPassword(e: React.FormEvent) {
@@ -571,6 +570,9 @@ export default function AuthPage() {
                           {rule.label}
                         </div>
                       ))}
+                      <div style={{ fontSize: 11, color: "var(--text-subtle)", marginTop: 4 }}>
+                        Tip: adding numbers and special characters makes your password stronger.
+                      </div>
                     </div>
                   )}
                   {mode === "login" && (

@@ -89,7 +89,6 @@ export default function ProfileClient() {
   const pwRules = [
     { label: "At least 8 characters", met: pwForm.newPassword.length >= 8 },
     { label: "One uppercase letter", met: /[A-Z]/.test(pwForm.newPassword) },
-    { label: "One special character", met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(pwForm.newPassword) },
   ];
 
   async function handleChangePw(e: React.FormEvent) {
@@ -494,6 +493,9 @@ export default function ProfileClient() {
                             <span className="prof-pw-rule-dot" />{r.label}
                           </div>
                         ))}
+                        <div style={{ fontSize: 11, color: "var(--text-subtle)", marginTop: 4 }}>
+                          Tip: adding numbers and special characters makes your password stronger.
+                        </div>
                       </div>
                     )}
                   </div>

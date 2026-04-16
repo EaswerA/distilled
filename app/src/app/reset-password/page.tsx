@@ -19,7 +19,6 @@ function ResetPasswordForm() {
   const pwRules = [
     { label: "At least 8 characters", met: password.length >= 8 },
     { label: "One uppercase letter", met: /[A-Z]/.test(password) },
-    { label: "One special character", met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password) },
   ];
 
   async function handleSubmit(e: React.FormEvent) {
