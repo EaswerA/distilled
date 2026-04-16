@@ -104,110 +104,148 @@ export default function AuthPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; background: var(--bg-page); transition: background 0.3s ease; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
 
-        .auth-page {
-          min-height: 100vh;
-          background: var(--bg-page);
+        /* ── LAYOUT ── */
+        .auth-layout {
+          display: flex; min-height: 100vh;
+        }
+
+        /* ── LEFT PANEL ── */
+        .auth-left {
+          width: 44%; flex-shrink: 0;
+          background: #0c0c0c;
+          border-right: 1px solid #1e1e1e;
+          display: flex; flex-direction: column;
+          padding: 40px 48px;
+          position: relative; overflow: hidden;
+        }
+        .auth-left::before {
+          content: '';
+          position: absolute; inset: 0;
+          background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.035) 1px, transparent 0);
+          background-size: 28px 28px;
+          pointer-events: none;
+        }
+        .auth-left-logo {
+          display: flex; align-items: center; gap: 9px;
+          position: relative; z-index: 1;
+        }
+        .auth-left-logo-icon {
+          width: 30px; height: 30px; border-radius: 7px; background: #f97316;
+          display: flex; align-items: center; justify-content: center;
+          font-weight: 800; font-size: 15px; color: #fff; flex-shrink: 0;
+        }
+        .auth-left-logo-name { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+
+        .auth-left-body {
+          flex: 1; display: flex; flex-direction: column; justify-content: center;
+          position: relative; z-index: 1; padding: 40px 0;
+        }
+        .auth-left-headline {
+          font-size: clamp(24px, 2.5vw, 34px); font-weight: 800;
+          color: #fff; letter-spacing: -1px; line-height: 1.1; margin-bottom: 16px;
+        }
+        .auth-left-sub {
+          font-size: 14px; color: rgba(255,255,255,0.42); line-height: 1.65;
+          max-width: 320px; margin-bottom: 36px;
+        }
+        .auth-left-features { display: flex; flex-direction: column; gap: 14px; }
+        .auth-left-feat {
+          display: flex; align-items: flex-start; gap: 11px;
+        }
+        .auth-left-feat-dot {
+          width: 20px; height: 20px; border-radius: 6px;
+          background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.2);
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; margin-top: 1px;
+        }
+        .auth-left-feat-text { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+        .auth-left-feat-text strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+
+        .auth-left-footer {
+          font-size: 12px; color: rgba(255,255,255,0.2);
+          position: relative; z-index: 1;
+        }
+
+        /* ── RIGHT PANEL ── */
+        .auth-right {
+          flex: 1; background: var(--bg-page);
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;
-          padding: 40px 24px;
-          position: relative; overflow: hidden;
+          padding: 40px 32px; position: relative;
           transition: background 0.3s ease;
-        }
-
-        .auth-page::before {
-          content: '';
-          position: absolute; top: -40%; right: -20%;
-          width: 600px; height: 600px; border-radius: 50%;
-          background: radial-gradient(circle, var(--overlay-radial-1) 0%, transparent 70%);
-          pointer-events: none;
-        }
-        .auth-page::after {
-          content: '';
-          position: absolute; bottom: -30%; left: -15%;
-          width: 500px; height: 500px; border-radius: 50%;
-          background: radial-gradient(circle, var(--overlay-radial-2) 0%, transparent 70%);
-          pointer-events: none;
         }
 
         /* Theme toggle */
-        .auth-theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 100; }
+        .auth-theme-toggle { position: absolute; top: 20px; right: 20px; z-index: 100; }
         .theme-toggle-btn {
-          width: 42px; height: 42px; border-radius: 12px;
-          border: 1.5px solid var(--border-default); background: var(--bg-card);
+          width: 38px; height: 38px; border-radius: 10px;
+          border: 1px solid var(--border-default); background: var(--bg-card);
           display: flex; align-items: center; justify-content: center;
           cursor: pointer; color: var(--text-muted); transition: all 0.2s ease;
-          box-shadow: var(--shadow-sm);
         }
-        .theme-toggle-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--bg-accent); }
+        .theme-toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-        .auth-content {
-          position: relative; z-index: 1;
-          display: flex; flex-direction: column; align-items: center;
-          width: 100%; max-width: 420px;
+        .auth-right-inner {
+          width: 100%; max-width: 380px;
         }
 
-        /* Branding */
-        .auth-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
-        .auth-brand-icon {
-          width: 44px; height: 44px; border-radius: 10px;
-          background: var(--primary);
+        /* Mobile logo (hidden on desktop) */
+        .auth-mobile-logo {
+          display: none; align-items: center; gap: 9px;
+          margin-bottom: 32px;
+        }
+        .auth-mobile-logo-icon {
+          width: 28px; height: 28px; border-radius: 7px; background: #f97316;
           display: flex; align-items: center; justify-content: center;
-          color: white; font-weight: 800; font-size: 20px;
+          font-weight: 800; font-size: 14px; color: #fff;
         }
-        .auth-brand-name {
-          font-size: 28px; font-weight: 800; color: var(--text-heading);
-          letter-spacing: -0.5px;
+        .auth-mobile-logo-name { font-size: 16px; font-weight: 700; color: var(--text-heading); letter-spacing: -0.3px; }
+
+        /* Form heading */
+        .auth-heading {
+          font-size: 22px; font-weight: 800; color: var(--text-heading);
+          letter-spacing: -0.5px; margin-bottom: 6px;
+        }
+        .auth-subheading {
+          font-size: 14px; color: var(--text-subtle); margin-bottom: 28px; line-height: 1.5;
         }
 
-        .auth-tagline { text-align: center; margin-bottom: 36px; }
-        .auth-badge {
-          display: inline-flex; align-items: center; gap: 6px;
-          padding: 6px 14px; background: var(--bg-accent);
-          border-radius: 999px; color: var(--primary);
-          font-size: 12px; font-weight: 600;
-          margin-bottom: 12px; letter-spacing: 0.02em;
-        }
-        .auth-headline {
-          font-size: 15px; color: var(--text-subtle);
-          line-height: 1.6; max-width: 360px; margin: 0;
-        }
-
-        /* Card */
+        /* Card - now just a subtle container */
         .auth-card {
-          background: var(--bg-card); border-radius: 14px;
+          background: var(--bg-card);
+          border-radius: 14px;
           border: 1px solid var(--border-default);
-          padding: 32px; width: 100%;
+          padding: 28px;
           box-shadow: var(--shadow-sm);
-          transition: background 0.3s ease;
         }
 
         /* Toggle */
         .auth-toggle {
-          display: flex; gap: 4px;
-          background: var(--bg-toggle); border-radius: 12px;
-          padding: 4px; margin-bottom: 24px;
+          display: flex; gap: 3px;
+          background: var(--bg-elevated); border-radius: 10px;
+          padding: 3px; margin-bottom: 24px;
+          border: 1px solid var(--border-default);
         }
         .auth-toggle-btn {
-          flex: 1; padding: 10px;
-          border: none; border-radius: 10px;
-          font-family: inherit; font-size: 14px; font-weight: 600;
-          cursor: pointer; transition: all 0.25s ease;
+          flex: 1; padding: 9px;
+          border: none; border-radius: 8px;
+          font-family: inherit; font-size: 13.5px; font-weight: 600;
+          cursor: pointer; transition: all 0.2s ease;
           background: transparent; color: var(--text-subtle);
         }
         .auth-toggle-btn.active {
-          background: var(--btn-dark); color: var(--text-inverse);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+          background: var(--text-heading); color: var(--bg-page);
+          box-shadow: 0 1px 4px rgba(0,0,0,0.15);
         }
 
         /* Form */
-        .auth-fields { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+        .auth-fields { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
         .auth-field {
-          width: 100%; padding: 14px 16px;
-          border: 1.5px solid var(--border-default); border-radius: 12px;
+          width: 100%; padding: 12px 14px;
+          border: 1px solid var(--border-default); border-radius: 10px;
           font-family: inherit; font-size: 14px; color: var(--text-heading);
           outline: none; transition: all 0.2s ease;
           background: var(--bg-input);
@@ -220,9 +258,9 @@ export default function AuthPage() {
         }
 
         .auth-password-wrap { position: relative; }
-        .auth-password-wrap .auth-field { padding-right: 46px; }
+        .auth-password-wrap .auth-field { padding-right: 44px; }
         .auth-eye-btn {
-          position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+          position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
           background: none; border: none; cursor: pointer;
           color: var(--text-subtle); display: flex; align-items: center;
           padding: 0; transition: color 0.2s ease;
@@ -230,111 +268,146 @@ export default function AuthPage() {
         .auth-eye-btn:hover { color: var(--text-heading); }
 
         .pw-rules { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
-        .pw-rule {
-          display: flex; align-items: center; gap: 6px;
-          font-size: 12px; color: var(--text-subtle); transition: color 0.2s ease;
-        }
+        .pw-rule { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-subtle); transition: color 0.2s ease; }
         .pw-rule.met { color: var(--text-success, #16a34a); }
-        .pw-rule-dot {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: var(--border-default); flex-shrink: 0; transition: background 0.2s ease;
-        }
+        .pw-rule-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-default); flex-shrink: 0; transition: background 0.2s ease; }
         .pw-rule.met .pw-rule-dot { background: var(--text-success, #16a34a); }
 
         .auth-error {
           background: var(--bg-error); color: var(--text-error);
           font-size: 13px; font-weight: 500;
-          padding: 10px 14px; border-radius: 10px;
-          margin-bottom: 16px; text-align: center;
+          padding: 10px 14px; border-radius: 8px;
+          margin-bottom: 14px; border: 1px solid var(--border-error);
         }
 
         .auth-submit {
-          width: 100%; padding: 14px;
-          border: none; border-radius: 12px;
-          background: var(--btn-dark); color: var(--text-inverse);
-          font-family: inherit; font-size: 15px; font-weight: 700;
-          cursor: pointer; transition: all 0.2s ease;
+          width: 100%; padding: 13px;
+          border: none; border-radius: 10px;
+          background: var(--text-heading); color: var(--bg-page);
+          font-family: inherit; font-size: 14px; font-weight: 700;
+          cursor: pointer; transition: opacity 0.15s, transform 0.1s;
           display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .auth-submit:hover { background: var(--btn-dark-hover); transform: translateY(-1px); box-shadow: 0 4px 16px var(--primary-shadow); }
-        .auth-submit:active { transform: translateY(0); }
-        .auth-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        .auth-submit:hover { opacity: 0.88; }
+        .auth-submit:active { transform: scale(0.99); }
+        .auth-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
         .auth-spinner {
-          width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
-          border-top-color: white; border-radius: 50%;
+          width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.25);
+          border-top-color: currentColor; border-radius: 50%;
           animation: spin 0.6s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .auth-success {
-          background: var(--bg-success, #f0fdf4); color: var(--text-success, #16a34a);
+          background: var(--bg-success); color: var(--text-success);
           font-size: 13px; font-weight: 500;
-          padding: 10px 14px; border-radius: 10px;
-          margin-bottom: 16px; text-align: center;
+          padding: 10px 14px; border-radius: 8px;
+          margin-bottom: 14px;
         }
 
         .check-email-icon {
-          width: 64px; height: 64px; border-radius: 16px;
-          background: var(--bg-accent); margin: 0 auto 20px;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 32px;
+          width: 56px; height: 56px; border-radius: 14px;
+          background: var(--primary-light); border: 1px solid rgba(249,115,22,0.2);
+          margin: 0 auto 18px;
+          display: flex; align-items: center; justify-content: center; font-size: 28px;
         }
-        .check-email-title { font-size: 20px; font-weight: 800; color: var(--text-heading); margin: 0 0 8px; text-align: center; }
-        .check-email-text { font-size: 14px; color: var(--text-subtle); line-height: 1.6; text-align: center; margin: 0 0 24px; }
+        .check-email-title { font-size: 19px; font-weight: 800; color: var(--text-heading); margin: 0 0 8px; text-align: center; }
+        .check-email-text { font-size: 13.5px; color: var(--text-subtle); line-height: 1.6; text-align: center; margin: 0 0 22px; }
         .check-email-btn {
-          width: 100%; padding: 13px; border: 1.5px solid var(--border-default);
-          border-radius: 12px; background: var(--bg-card);
-          font-family: inherit; font-size: 14px; font-weight: 600;
+          width: 100%; padding: 12px; border: 1px solid var(--border-default);
+          border-radius: 10px; background: transparent;
+          font-family: inherit; font-size: 13.5px; font-weight: 600;
           color: var(--text-muted); cursor: pointer; transition: all 0.2s ease;
         }
-        .check-email-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--bg-accent); }
+        .check-email-btn:hover { border-color: var(--border-hover); color: var(--primary); }
 
         .auth-forgot-link {
           background: none; border: none; color: var(--text-subtle);
           font-family: inherit; font-size: 12px; font-weight: 500;
-          cursor: pointer; padding: 0; margin-top: 8px;
+          cursor: pointer; padding: 0; margin-top: 6px;
           display: block; text-align: right; transition: color 0.2s;
         }
         .auth-forgot-link:hover { color: var(--primary); }
 
-        .auth-footer { text-align: center; font-size: 13px; color: var(--text-subtle); margin-top: 20px; }
+        .auth-footer { text-align: center; font-size: 13px; color: var(--text-subtle); margin-top: 18px; }
         .auth-footer-link {
-          background: none; border: none;
-          color: var(--primary); font-family: inherit;
-          font-size: 13px; font-weight: 600;
+          background: none; border: none; color: var(--primary);
+          font-family: inherit; font-size: 13px; font-weight: 600;
           cursor: pointer; margin-left: 4px; padding: 0;
         }
         .auth-footer-link:hover { text-decoration: underline; }
 
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+          .auth-left { display: none; }
+          .auth-right { padding: 32px 24px; justify-content: flex-start; padding-top: 72px; }
+          .auth-mobile-logo { display: flex; }
+        }
         @media (max-width: 480px) {
-          .auth-card { padding: 24px; }
-          .auth-brand-name { font-size: 24px; }
+          .auth-card { padding: 22px; }
+          .auth-right { padding: 64px 20px 32px; }
         }
       `}</style>
 
-      <div className="auth-page">
-        <div className="auth-theme-toggle">
-          <ThemeToggle />
+      <div className="auth-layout">
+
+        {/* ── LEFT BRAND PANEL ── */}
+        <div className="auth-left">
+          <div className="auth-left-logo">
+            <div className="auth-left-logo-icon">D</div>
+            <span className="auth-left-logo-name">Distilled</span>
+          </div>
+
+          <div className="auth-left-body">
+            <h2 className="auth-left-headline">
+              Your feed,<br />actually worth<br />reading.
+            </h2>
+            <p className="auth-left-sub">
+              Curated from Reddit, Hacker News, Dev.to, and RSS — ranked by your interests, summarized by AI.
+            </p>
+            <div className="auth-left-features">
+              {[
+                { icon: "✦", text: <><strong>AI summary + impact</strong> on every article</> },
+                { icon: "✦", text: <><strong>Ranked by what you engage with</strong>, not by virality</> },
+                { icon: "✦", text: <><strong>Daily, weekly, or monthly digest</strong> by email</> },
+              ].map((f, i) => (
+                <div key={i} className="auth-left-feat">
+                  <div className="auth-left-feat-dot">
+                    <span style={{ fontSize: 9, color: "#f97316", fontWeight: 700 }}>{f.icon}</span>
+                  </div>
+                  <span className="auth-left-feat-text">{f.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="auth-left-footer">Free to use · No credit card required</div>
         </div>
 
-        <div className="auth-content">
-          <div className="auth-brand">
-            <div className="auth-brand-icon">D</div>
-            <span className="auth-brand-name">Distilled</span>
+        {/* ── RIGHT FORM PANEL ── */}
+        <div className="auth-right">
+          <div className="auth-theme-toggle">
+            <ThemeToggle />
           </div>
 
-          <div className="auth-tagline">
-            <div className="auth-badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-              </svg>
-              Mindful Content Consumption
+          <div className="auth-right-inner">
+            {/* Mobile-only logo */}
+            <div className="auth-mobile-logo">
+              <div className="auth-mobile-logo-icon">D</div>
+              <span className="auth-mobile-logo-name">Distilled</span>
             </div>
-            <p className="auth-headline">
-              Cut through the noise. Get curated, relevant content tailored to your interests.
-            </p>
-          </div>
+
+            {!checkEmail && mode !== "forgot" && (
+              <div style={{ marginBottom: 20 }}>
+                <h1 className="auth-heading">
+                  {mode === "login" ? "Welcome back" : "Create your account"}
+                </h1>
+                <p className="auth-subheading">
+                  {mode === "login" ? "Sign in to your Distilled account." : "Start reading smarter in under a minute."}
+                </p>
+              </div>
+            )}
 
           <div className="auth-card">
             {checkEmail ? (
@@ -530,8 +603,9 @@ export default function AuthPage() {
             </>
             )}
           </div>
-        </div>
-      </div>
+          </div>{/* auth-right-inner */}
+        </div>{/* auth-right */}
+      </div>{/* auth-layout */}
     </>
   );
 }
