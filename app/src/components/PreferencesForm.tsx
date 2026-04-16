@@ -201,10 +201,9 @@ export default function PreferencesForm({
         }
         .pref-brand-icon {
           width: 44px; height: 44px; border-radius: 12px;
-          background: linear-gradient(135deg, var(--gradient-brand-start), var(--gradient-brand-end));
-          display: flex; align-items: center; justify-content: center;
-          color: white; font-weight: 800; font-size: 20px;
+          overflow: hidden; flex-shrink: 0;
         }
+        .pref-brand-icon img { width: 100%; height: 100%; display: block; }
         .pref-brand-name {
           font-size: 28px; font-weight: 800; color: var(--text-heading);
           letter-spacing: -0.5px;
@@ -409,7 +408,7 @@ export default function PreferencesForm({
         <div className="pref-header">
           {mode === "onboarding" && (
             <div className="pref-brand">
-              <div className="pref-brand-icon">D</div>
+              <div className="pref-brand-icon"><img src="/android-chrome-192x192.png" alt="Distilled" /></div>
               <span className="pref-brand-name">Distilled</span>
             </div>
           )}

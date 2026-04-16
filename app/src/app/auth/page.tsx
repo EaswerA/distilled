@@ -127,10 +127,10 @@ export default function AuthPage() {
           position: relative; z-index: 1;
         }
         .auth-left-logo-icon {
-          width: 30px; height: 30px; border-radius: 7px; background: #f97316;
-          display: flex; align-items: center; justify-content: center;
-          font-weight: 800; font-size: 15px; color: #fff; flex-shrink: 0;
+          width: 30px; height: 30px; border-radius: 7px;
+          overflow: hidden; flex-shrink: 0;
         }
+        .auth-left-logo-icon img { width: 100%; height: 100%; display: block; }
         .auth-left-logo-name { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
 
         .auth-left-body {
@@ -192,10 +192,10 @@ export default function AuthPage() {
           margin-bottom: 32px;
         }
         .auth-mobile-logo-icon {
-          width: 28px; height: 28px; border-radius: 7px; background: #f97316;
-          display: flex; align-items: center; justify-content: center;
-          font-weight: 800; font-size: 14px; color: #fff;
+          width: 28px; height: 28px; border-radius: 7px;
+          overflow: hidden; flex-shrink: 0;
         }
+        .auth-mobile-logo-icon img { width: 100%; height: 100%; display: block; }
         .auth-mobile-logo-name { font-size: 16px; font-weight: 700; color: var(--text-heading); letter-spacing: -0.3px; }
 
         /* Form heading */
@@ -349,7 +349,7 @@ export default function AuthPage() {
         {/* ── LEFT BRAND PANEL ── */}
         <div className="auth-left">
           <div className="auth-left-logo">
-            <div className="auth-left-logo-icon">D</div>
+            <div className="auth-left-logo-icon"><img src="/android-chrome-192x192.png" alt="Distilled" /></div>
             <span className="auth-left-logo-name">Distilled</span>
           </div>
 
@@ -388,7 +388,7 @@ export default function AuthPage() {
           <div className="auth-right-inner">
             {/* Mobile-only logo */}
             <div className="auth-mobile-logo">
-              <div className="auth-mobile-logo-icon">D</div>
+              <div className="auth-mobile-logo-icon"><img src="/android-chrome-192x192.png" alt="Distilled" /></div>
               <span className="auth-mobile-logo-name">Distilled</span>
             </div>
 

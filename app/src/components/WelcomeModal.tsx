@@ -38,12 +38,9 @@ export default function WelcomeModal() {
       }}>
         {/* Logo + Title */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 10,
-            background: "var(--primary)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontWeight: 800, fontSize: 22, color: "white", flexShrink: 0,
-          }}>D</div>
+          <div style={{ width: 44, height: 44, borderRadius: 10, overflow: "hidden", flexShrink: 0 }}>
+            <img src="/android-chrome-192x192.png" alt="Distilled" style={{ width: "100%", height: "100%", display: "block" }} />
+          </div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: "var(--text-heading)", letterSpacing: "-0.4px" }}>
               Welcome to Distilled

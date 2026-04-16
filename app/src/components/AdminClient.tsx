@@ -193,10 +193,9 @@ export default function AdminClient({ mustChangePassword }: { mustChangePassword
         .adm-brand { display: flex; align-items: center; gap: 10px; }
         .adm-brand-icon {
           width: 36px; height: 36px; border-radius: 10px;
-          background: linear-gradient(135deg, var(--gradient-brand-start), var(--gradient-brand-end));
-          display: flex; align-items: center; justify-content: center;
-          color: white; font-weight: 800; font-size: 16px;
+          overflow: hidden; flex-shrink: 0;
         }
+        .adm-brand-icon img { width: 100%; height: 100%; display: block; }
         .adm-brand-name { font-size: 20px; font-weight: 800; color: var(--text-heading); letter-spacing: -0.5px; }
         .adm-badge {
           padding: 3px 10px; border-radius: 999px;
@@ -415,7 +414,7 @@ export default function AdminClient({ mustChangePassword }: { mustChangePassword
       <nav className={`adm-navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="adm-navbar-inner">
           <div className="adm-brand">
-            <div className="adm-brand-icon">D</div>
+            <div className="adm-brand-icon"><img src="/android-chrome-192x192.png" alt="Distilled" /></div>
             <span className="adm-brand-name">Distilled</span>
             <span className="adm-badge">Admin</span>
           </div>

@@ -117,11 +117,9 @@ export default function NavBar({ currentPage }: { currentPage: Page }) {
         }
         .app-brand-icon {
           width: 28px; height: 28px; border-radius: 6px;
-          background: var(--primary);
-          display: flex; align-items: center; justify-content: center;
-          color: #fff; font-weight: 800; font-size: 13px;
-          letter-spacing: -0.5px; flex-shrink: 0;
+          overflow: hidden; flex-shrink: 0;
         }
+        .app-brand-icon img { width: 100%; height: 100%; display: block; }
         .app-brand-name {
           font-size: 16px; font-weight: 700;
           color: var(--text-heading); letter-spacing: -0.3px;
@@ -261,7 +259,7 @@ export default function NavBar({ currentPage }: { currentPage: Page }) {
       <nav className={`app-navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="app-navbar-inner">
           <div className="app-brand" onClick={() => navigate("/feed")} role="button" tabIndex={0}>
-            <div className="app-brand-icon">D</div>
+            <div className="app-brand-icon"><img src="/android-chrome-192x192.png" alt="Distilled" /></div>
             <span className="app-brand-name">Distilled</span>
           </div>
 

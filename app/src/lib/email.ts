@@ -13,7 +13,7 @@ function emailHeader() {
           <table cellpadding="0" cellspacing="0" border="0">
             <tr>
               <td style="vertical-align:middle;">
-                <div style="width:34px;height:34px;background:#f97316;border-radius:8px;text-align:center;line-height:34px;font-size:17px;font-weight:800;color:#ffffff;display:inline-block;">D</div>
+                <img src="${process.env.NEXTAUTH_URL}/android-chrome-192x192.png" alt="Distilled" width="34" height="34" style="border-radius:8px;display:block;" />
               </td>
               <td style="vertical-align:middle;padding-left:9px;">
                 <span style="font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.4px;">Distilled</span>
@@ -138,7 +138,7 @@ export async function sendDigestEmail(
                           <table cellpadding="0" cellspacing="0" border="0">
                             <tr>
                               <td style="vertical-align:middle;">
-                                <div style="width:34px;height:34px;background:#f97316;border-radius:8px;text-align:center;line-height:34px;font-size:17px;font-weight:800;color:#ffffff;display:inline-block;">D</div>
+                                <img src="${process.env.NEXTAUTH_URL}/android-chrome-192x192.png" alt="Distilled" width="34" height="34" style="border-radius:8px;display:block;" />
                               </td>
                               <td style="vertical-align:middle;padding-left:9px;">
                                 <span style="font-size:18px;font-weight:800;color:#ffffff;letter-spacing:-0.4px;">Distilled</span>

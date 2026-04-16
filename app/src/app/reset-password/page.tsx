@@ -90,10 +90,9 @@ function ResetPasswordForm() {
         .rp-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; justify-content: center; }
         .rp-brand-icon {
           width: 44px; height: 44px; border-radius: 12px;
-          background: linear-gradient(135deg, var(--gradient-brand-start), var(--gradient-brand-end));
-          display: flex; align-items: center; justify-content: center;
-          color: white; font-weight: 800; font-size: 20px;
+          overflow: hidden; flex-shrink: 0;
         }
+        .rp-brand-icon img { width: 100%; height: 100%; display: block; }
         .rp-brand-name { font-size: 28px; font-weight: 800; color: var(--text-heading); letter-spacing: -0.5px; }
 
         .rp-card {
@@ -165,7 +164,7 @@ function ResetPasswordForm() {
         <div className="rp-theme-toggle"><ThemeToggle /></div>
         <div className="rp-content">
           <div className="rp-brand">
-            <div className="rp-brand-icon">D</div>
+            <div className="rp-brand-icon"><img src="/android-chrome-192x192.png" alt="Distilled" /></div>
             <span className="rp-brand-name">Distilled</span>
           </div>
 

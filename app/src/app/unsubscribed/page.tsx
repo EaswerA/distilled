@@ -9,12 +9,9 @@ export default function UnsubscribedPage() {
       background: "#f8fafc",
     }}>
       <div style={{ textAlign: "center", maxWidth: 400, padding: "0 24px" }}>
-        <div style={{
-          width: 56, height: 56, borderRadius: 16,
-          background: "#f97316",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          margin: "0 auto 24px", color: "white", fontWeight: 800, fontSize: 24,
-        }}>D</div>
+        <div style={{ width: 56, height: 56, borderRadius: 16, overflow: "hidden", margin: "0 auto 24px" }}>
+          <img src="/android-chrome-192x192.png" alt="Distilled" style={{ width: "100%", height: "100%", display: "block" }} />
+        </div>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", marginBottom: 8 }}>
           Unsubscribed
         </h1>

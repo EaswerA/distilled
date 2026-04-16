@@ -110,12 +110,9 @@ export default function InterestCheckModal() {
       }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: 9,
-            background: "var(--primary)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontWeight: 800, fontSize: 18, color: "white", flexShrink: 0,
-          }}>D</div>
+          <div style={{ width: 38, height: 38, borderRadius: 9, overflow: "hidden", flexShrink: 0 }}>
+            <img src="/android-chrome-192x192.png" alt="Distilled" style={{ width: "100%", height: "100%", display: "block" }} />
+          </div>
           <div>
             <div style={{ fontSize: 16, fontWeight: 800, color: "var(--text-heading)", letterSpacing: "-0.3px" }}>
               Quick check-in

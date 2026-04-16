@@ -31,10 +31,10 @@ export default async function Home() {
         }
         .lp-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
         .lp-logo-icon {
-          width: 28px; height: 28px; border-radius: 7px; background: #f97316; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-          font-weight: 800; font-size: 14px; color: #fff;
+          width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+          overflow: hidden;
         }
+        .lp-logo-icon img { width: 100%; height: 100%; display: block; }
         .lp-logo-name { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
         .lp-nav-right { display: flex; align-items: center; gap: 6px; }
         .lp-nav-signin {
@@ -368,7 +368,7 @@ export default async function Home() {
       {/* ── NAV ── */}
       <nav className="lp-nav">
         <Link href="/" className="lp-logo">
-          <div className="lp-logo-icon">D</div>
+          <div className="lp-logo-icon"><img src="/android-chrome-192x192.png" alt="Distilled" /></div>
           <span className="lp-logo-name">Distilled</span>
         </Link>
         <div className="lp-nav-right">
@@ -670,7 +670,7 @@ export default async function Home() {
       <div className="lp-footer-wrap">
         <div className="lp-footer">
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 20, height: 20, borderRadius: 5, background: "#f97316", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#fff" }}>D</div>
+            <div style={{ width: 20, height: 20, borderRadius: 5, overflow: "hidden", flexShrink: 0 }}><img src="/android-chrome-192x192.png" alt="Distilled" style={{ width: "100%", height: "100%", display: "block" }} /></div>
             <span>Distilled · © 2026</span>
           </div>
           <a href="mailto:support@distilled.blog">support@distilled.blog</a>
