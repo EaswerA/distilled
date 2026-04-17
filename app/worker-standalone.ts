@@ -11,7 +11,7 @@
  */
 
 import { startWorker } from "@/lib/worker";
-import { scheduleIngestion } from "@/lib/queue";
+import { scheduleIngestion, scheduleDigests } from "@/lib/queue";
 
 async function main() {
   console.log("Starting standalone worker process...");
@@ -19,6 +19,7 @@ async function main() {
   // Register the recurring ingest schedules in Redis.
   // upsertJobScheduler is idempotent so this is safe to run on every boot.
   await scheduleIngestion();
+  await scheduleDigests();
 
   // Start the BullMQ worker that processes those scheduled jobs.
   const worker = startWorker();
